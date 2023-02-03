@@ -1,6 +1,6 @@
 package com.entity;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
@@ -10,7 +10,7 @@ public class Manager extends User {
 	@Column(nullable = false, length = 50)
 	private String department;
 
-    @OneToMany(mappedBy = "absence")
+    @OneToMany(mappedBy = "manager")
 	private List<User> users;
 
 

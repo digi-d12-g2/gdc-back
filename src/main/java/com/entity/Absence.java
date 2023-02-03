@@ -1,6 +1,6 @@
 package com.entity;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import com.enums.Status;
 import com.enums.Type;
@@ -29,7 +29,7 @@ public class Absence extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "id_user")
     private User user;
-    
+
 
     public LocalDateTime getDate_start() {
         return this.date_start;
