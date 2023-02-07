@@ -32,6 +32,19 @@ public class Absence extends BaseEntity {
     @JoinColumn(name = "id_user")
     private User user;
 
+    public Absence(
+        LocalDateTime date_start,
+        LocalDateTime date_end,
+        Type type,
+        Status status,
+        String reason
+    ) {
+        this.date_start = date_start;
+        this.date_end = date_end;
+        this.type = type;
+        this.status = status;
+        this.reason = reason;
+    }
 
     public LocalDateTime getDate_start() {
         return this.date_start;

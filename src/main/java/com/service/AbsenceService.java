@@ -1,22 +1,34 @@
 package com.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import jakarta.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
 import com.repository.AbsenceRepository;
-
+import com.repository.UserRepository;
 import com.entity.Absence;
+import com.entity.User;
+import com.exception.ResourceNotFoundException;
+
+import com.enums.*;
+import com.dto.RequestAbsenceDto;
+import com.dto.ResponseAbsenceDto;
 
 @Service
 public class AbsenceService {
 
     private AbsenceRepository absenceRepository;
+	private UserRepository userRepository;
 
-    public AbsenceService(AbsenceRepository absenceRepository) {
+    public AbsenceService(
+		AbsenceRepository absenceRepository,
+		UserRepository userRepository
+	) {
 		this.absenceRepository = absenceRepository;
+		this.userRepository = userRepository;
 	}
 	
 	public List<Absence> getAbsences() {
@@ -28,17 +40,45 @@ public class AbsenceService {
 	}
 	
 	@Transactional
-	public Absence addAbsence(Absence absence) {
+	public ResponseAbsenceDto addAbsence(RequestAbsenceDto requestAbsence) {
+
+		Absence absence = new Absence(
+			requestAbsence.getDate_start(),
+			requestAbsence.getDate_end(),
+			requestAbsence.getType(),
+			Status.INITIALE,
+			requestAbsence.getReason()
+		);
+
+		Optional<User> optionnalUser = this.userRepository.findById(requestAbsence.getUserId());
+
+        optionnalUser.ifPresentOrElse(
+                (User u) -> {
+                    absence.setUser(u);
+                }, () -> {
+                    throw new ResourceNotFoundException("Utilisateur introuvable");
+                });
 
 		if (checkAbsenceIsValid(absence)){
-			return this.absenceRepository.save(absence);
+			this.absenceRepository.save(absence);
+
+			ResponseAbsenceDto response = new ResponseAbsenceDto(
+				absence.getId(),
+				absence.getDate_start(),
+				absence.getDate_end(),
+				absence.getType(),
+				absence.getStatus(),
+				absence.getUser().getId(),
+				absence.getReason());
+	
+			return response;
 		} else {
-			return null;
+			throw new ResourceNotFoundException("Impossible de créer la demande de congé");
 		}
 	}
 
 	@Transactional
-	public Absence updateAbsence(Long id, Absence absence){
+	public ResponseAbsenceDto updateAbsence(Long id, Absence absence){
 		
 		if (checkUpdateIsValid(absence)){
 			Absence absenceToUpdate = getAbsence(id);
@@ -47,7 +87,18 @@ public class AbsenceService {
 			absenceToUpdate.setReason(absence.getReason());
 			absenceToUpdate.setType(absence.getType());
 
-			return this.absenceRepository.save(absenceToUpdate);
+			this.absenceRepository.save(absenceToUpdate);
+
+			ResponseAbsenceDto response = new ResponseAbsenceDto(
+				absenceToUpdate.getId(),
+				absenceToUpdate.getDate_start(),
+				absenceToUpdate.getDate_end(),
+				absenceToUpdate.getType(),
+				absenceToUpdate.getStatus(),
+				absenceToUpdate.getUser().getId(),
+				absenceToUpdate.getReason());
+	
+			return response;
 		} else {
 			return null;
 		}
@@ -59,7 +110,32 @@ public class AbsenceService {
 		this.absenceRepository.deleteById(id);
 	}
 
+	@Transactional
+	public ResponseAbsenceDto confirmAbsence(Long id, Status status) {
+		Optional<Absence> absence = this.absenceRepository.findById(id);
 
+		if(absence.isPresent() && absence.get().getStatus().toString().equals("EN_ATTENTE_VALIDATION")) {
+			Absence absenceToUpdate = absence.get();
+			absenceToUpdate.setStatus(status);
+
+			this.absenceRepository.save(absenceToUpdate);
+	
+			ResponseAbsenceDto response = new ResponseAbsenceDto(
+				absenceToUpdate.getId(),
+				absenceToUpdate.getDate_start(),
+				absenceToUpdate.getDate_end(),
+				absenceToUpdate.getType(),
+				absenceToUpdate.getStatus(),
+				absenceToUpdate.getUser().getId(),
+				absenceToUpdate.getReason());
+	
+			return response;
+		} else {
+			throw new ResourceNotFoundException("Absence introuvable.");
+		}
+		
+	
+	}
 
 	private boolean checkAbsenceIsValid(Absence absence){
 
