@@ -3,6 +3,7 @@ package com.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.dto.RequestAbsenceDto;
 import com.entity.Absence;
 import com.enums.Status;
 import com.service.AbsenceService;
@@ -28,7 +29,7 @@ public class AbsenceController {
 	}
 	
 	@PostMapping()
-	public ResponseEntity<?> addAbsence(@RequestBody Absence absence) {
+	public ResponseEntity<?> addAbsence(@RequestBody RequestAbsenceDto absence) {
 		return ResponseEntity.ok().body(this.absenceService.addAbsence(absence));
 	}
 

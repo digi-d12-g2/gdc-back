@@ -8,20 +8,27 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import com.repository.AbsenceRepository;
-
+import com.repository.UserRepository;
 import com.entity.Absence;
+import com.entity.User;
 import com.exception.ResourceNotFoundException;
 
 import com.enums.*;
+import com.dto.RequestAbsenceDto;
 import com.dto.ResponseAbsenceDto;
 
 @Service
 public class AbsenceService {
 
     private AbsenceRepository absenceRepository;
+	private UserRepository userRepository;
 
-    public AbsenceService(AbsenceRepository absenceRepository) {
+    public AbsenceService(
+		AbsenceRepository absenceRepository,
+		UserRepository userRepository
+	) {
 		this.absenceRepository = absenceRepository;
+		this.userRepository = userRepository;
 	}
 	
 	public List<Absence> getAbsences() {
@@ -33,7 +40,24 @@ public class AbsenceService {
 	}
 	
 	@Transactional
-	public ResponseAbsenceDto addAbsence(Absence absence) {
+	public ResponseAbsenceDto addAbsence(RequestAbsenceDto requestAbsence) {
+
+		Absence absence = new Absence(
+			requestAbsence.getDate_start(),
+			requestAbsence.getDate_end(),
+			requestAbsence.getType(),
+			Status.INITIALE,
+			requestAbsence.getReason()
+		);
+
+		Optional<User> optionnalUser = this.userRepository.findById(requestAbsence.getUserId());
+
+        optionnalUser.ifPresentOrElse(
+                (User u) -> {
+                    absence.setUser(u);
+                }, () -> {
+                    throw new ResourceNotFoundException("Utilisateur introuvable");
+                });
 
 		if (checkAbsenceIsValid(absence)){
 			this.absenceRepository.save(absence);
@@ -49,7 +73,7 @@ public class AbsenceService {
 	
 			return response;
 		} else {
-			return null;
+			throw new ResourceNotFoundException("Impossible de créer la demande de congé");
 		}
 	}
 

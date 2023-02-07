@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import com.enums.Status;
 import com.enums.Type;
 
-public class ResponseAbsenceDto {
+public class RequestAbsenceDto {
     private Long id;
     private LocalDateTime date_start;
     private LocalDateTime date_end;
@@ -14,7 +14,7 @@ public class ResponseAbsenceDto {
     private String reason;
     private Long userId;
 
-    public ResponseAbsenceDto(
+    public RequestAbsenceDto(
         Long id, 
         LocalDateTime date_start,
         LocalDateTime date_end, 
@@ -23,16 +23,15 @@ public class ResponseAbsenceDto {
         Long userId,
         String reason
     ) {
-        this.id = id;
         this.date_start = date_start;
         this.date_end = date_end;
+        this.date_start = date_start;
         this.type = type;
-        this.status = status;
         this.reason = reason;
         this.userId = userId;
     }
 
-    public ResponseAbsenceDto() {
+    public RequestAbsenceDto() {
     }
 
     public Long getId() {
@@ -90,5 +89,6 @@ public class ResponseAbsenceDto {
     public void setUserId(Long userId) {
         this.userId = userId;
     }
+
 
 }
