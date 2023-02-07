@@ -1,9 +1,13 @@
 package com.controller;
 
+import java.util.stream.Collectors;
+
+import org.apache.catalina.mapper.Mapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.dto.RequestAbsenceDto;
+import com.dto.ResponseAbsenceDto;
 import com.entity.Absence;
 import com.enums.Status;
 import com.service.AbsenceService;
@@ -22,7 +26,12 @@ public class AbsenceController {
 	public ResponseEntity<?> getAbsences() {
 		return ResponseEntity.ok().body(this.absenceService.getAbsences());
 	}
-	
+
+	@GetMapping("/user/{id}")
+	public ResponseEntity<?> getAbsenceFromUser(@PathVariable Long id) {
+		return ResponseEntity.ok().body(this.absenceService.getAbsencesFromUser(id).stream().map(this::convertToDto).collect(Collectors.toList()));
+	}
+
 	@GetMapping("/{id}")
 	public ResponseEntity<?> getAbsence(@PathVariable Long id) {
 		return ResponseEntity.ok().body(this.absenceService.getAbsence(id));
@@ -55,4 +64,16 @@ public class AbsenceController {
 	}
     
     
+	private ResponseAbsenceDto convertToDto(Absence absence) {
+		ResponseAbsenceDto absenceDto = new ResponseAbsenceDto(
+			absence.getId(),
+			absence.getDate_start(),
+			absence.getDate_end(),
+			absence.getType(),
+			absence.getStatus(),
+			absence.getUser().getId(),
+			absence.getReason());
+
+		return absenceDto;
+	}
 }
