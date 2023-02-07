@@ -46,6 +46,8 @@ public class Absence extends BaseEntity {
         this.reason = reason;
     }
 
+    public Absence() {}
+
     public LocalDateTime getDate_start() {
         return this.date_start;
     }

@@ -2,6 +2,7 @@ package com.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import jakarta.transaction.Transactional;
 
@@ -33,6 +34,19 @@ public class AbsenceService {
 	
 	public List<Absence> getAbsences() {
 		return this.absenceRepository.findAll();
+	}
+
+
+	public List<Absence> getAbsencesFromUser(long id) {
+
+		Optional<User> optionnalUser = this.userRepository.findById(id);
+
+		if(optionnalUser.isEmpty()) {
+			throw new ResourceNotFoundException("Utilisateur introuvable");
+		}
+
+		return this.absenceRepository.findByUserId(id);
+
 	}
 	
 	public Absence getAbsence(Long id) {
