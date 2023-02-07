@@ -1,6 +1,7 @@
 package com.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import jakarta.transaction.Transactional;
 
@@ -9,6 +10,10 @@ import org.springframework.stereotype.Service;
 import com.repository.AbsenceRepository;
 
 import com.entity.Absence;
+import com.exception.ResourceNotFoundException;
+
+import com.enums.*;
+import com.dto.ResponseAbsenceDto;
 
 @Service
 public class AbsenceService {
@@ -28,17 +33,28 @@ public class AbsenceService {
 	}
 	
 	@Transactional
-	public Absence addAbsence(Absence absence) {
+	public ResponseAbsenceDto addAbsence(Absence absence) {
 
 		if (checkAbsenceIsValid(absence)){
-			return this.absenceRepository.save(absence);
+			this.absenceRepository.save(absence);
+
+			ResponseAbsenceDto response = new ResponseAbsenceDto(
+				absence.getId(),
+				absence.getDate_start(),
+				absence.getDate_end(),
+				absence.getType(),
+				absence.getStatus(),
+				absence.getUser().getId(),
+				absence.getReason());
+	
+			return response;
 		} else {
 			return null;
 		}
 	}
 
 	@Transactional
-	public Absence updateAbsence(Long id, Absence absence){
+	public ResponseAbsenceDto updateAbsence(Long id, Absence absence){
 		
 		if (checkUpdateIsValid(absence)){
 			Absence absenceToUpdate = getAbsence(id);
@@ -47,7 +63,18 @@ public class AbsenceService {
 			absenceToUpdate.setReason(absence.getReason());
 			absenceToUpdate.setType(absence.getType());
 
-			return this.absenceRepository.save(absenceToUpdate);
+			this.absenceRepository.save(absenceToUpdate);
+
+			ResponseAbsenceDto response = new ResponseAbsenceDto(
+				absenceToUpdate.getId(),
+				absenceToUpdate.getDate_start(),
+				absenceToUpdate.getDate_end(),
+				absenceToUpdate.getType(),
+				absenceToUpdate.getStatus(),
+				absenceToUpdate.getUser().getId(),
+				absenceToUpdate.getReason());
+	
+			return response;
 		} else {
 			return null;
 		}
@@ -59,7 +86,32 @@ public class AbsenceService {
 		this.absenceRepository.deleteById(id);
 	}
 
+	@Transactional
+	public ResponseAbsenceDto confirmAbsence(Long id, Status status) {
+		Optional<Absence> absence = this.absenceRepository.findById(id);
 
+		if(absence.isPresent() && absence.get().getStatus().toString().equals("EN_ATTENTE_VALIDATION")) {
+			Absence absenceToUpdate = absence.get();
+			absenceToUpdate.setStatus(status);
+
+			this.absenceRepository.save(absenceToUpdate);
+	
+			ResponseAbsenceDto response = new ResponseAbsenceDto(
+				absenceToUpdate.getId(),
+				absenceToUpdate.getDate_start(),
+				absenceToUpdate.getDate_end(),
+				absenceToUpdate.getType(),
+				absenceToUpdate.getStatus(),
+				absenceToUpdate.getUser().getId(),
+				absenceToUpdate.getReason());
+	
+			return response;
+		} else {
+			throw new ResourceNotFoundException("Absence introuvable.");
+		}
+		
+	
+	}
 
 	private boolean checkAbsenceIsValid(Absence absence){
 

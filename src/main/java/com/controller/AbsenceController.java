@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.entity.Absence;
+import com.enums.Status;
 import com.service.AbsenceService;
 
 @RestController
@@ -22,7 +23,7 @@ public class AbsenceController {
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<?> getAbsences(@PathVariable Long id) {
+	public ResponseEntity<?> getAbsence(@PathVariable Long id) {
 		return ResponseEntity.ok().body(this.absenceService.getAbsence(id));
 	}
 	
@@ -34,6 +35,16 @@ public class AbsenceController {
 	@PutMapping("/{id}")
 	public void updateAbsence(@PathVariable Long id, @RequestBody Absence absence) {
 		absenceService.updateAbsence(id, absence);
+	}
+
+	@GetMapping("/confirm/{id}")
+	public ResponseEntity<?> confirmAbsence(@PathVariable Long id) {
+		return ResponseEntity.ok().body(this.absenceService.confirmAbsence(id, Status.VALIDEE));
+	}
+
+	@GetMapping("/decline/{id}")
+	public ResponseEntity<?> declineAbsence(@PathVariable Long id) {
+		return ResponseEntity.ok().body(this.absenceService.confirmAbsence(id, Status.REJETEE));
 	}
 	
 	@DeleteMapping("/{id}")
