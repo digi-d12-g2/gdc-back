@@ -17,13 +17,15 @@ public class Absence extends BaseEntity {
     @Column(nullable = false)
     private LocalDateTime date_end;
 
-    @Column(nullable = false, length = 25)
+    @Enumerated(EnumType.STRING)
+    @Column(length = 25)
     private Type type;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = true, length = 255)
     private String reason;
 
-    @Column(nullable = false)
+    @Column(length = 25)
+    @Enumerated(EnumType.STRING)
     private Status status;
 
     @ManyToOne
