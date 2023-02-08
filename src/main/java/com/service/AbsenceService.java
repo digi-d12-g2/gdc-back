@@ -17,19 +17,22 @@ import com.exception.ResourceNotFoundException;
 import com.enums.*;
 import com.dto.RequestAbsenceDto;
 import com.dto.ResponseAbsenceDto;
+import com.enums.Type;
 
 @Service
 public class AbsenceService {
 
     private AbsenceRepository absenceRepository;
 	private UserRepository userRepository;
+	private EmployerRttService employerRttService;
 
     public AbsenceService(
 		AbsenceRepository absenceRepository,
 		UserRepository userRepository
-	) {
+	, EmployerRttService employerRttService) {
 		this.absenceRepository = absenceRepository;
 		this.userRepository = userRepository;
+		this.employerRttService = employerRttService;
 	}
 	
 	public List<Absence> getAbsences() {
@@ -74,7 +77,19 @@ public class AbsenceService {
                 });
 
 		if (checkAbsenceIsValid(absence)){
+
+			if(absence.getType() == Type.RTT_EMPLOYEUR){
+				if(this.employerRttService.checkEmployerRttIsValid(absence)){
+					this.employerRttService.decrementEmployerRTT(1L, this.employerRttService.getEmployerRTT(1L));
+					return this.absenceRepository.save(absence);
+				} else {
+					return null;
+				}
+			}
+
 			this.absenceRepository.save(absence);
+
+
 
 			ResponseAbsenceDto response = new ResponseAbsenceDto(
 				absence.getId(),
@@ -96,6 +111,7 @@ public class AbsenceService {
 		
 		if (checkUpdateIsValid(absence)){
 			Absence absenceToUpdate = getAbsence(id);
+
 			absenceToUpdate.setDate_start(absence.getDate_start());
 			absenceToUpdate.setDate_end(absence.getDate_end());
 			absenceToUpdate.setReason(absence.getReason());
@@ -121,7 +137,13 @@ public class AbsenceService {
 	
 	@Transactional
 	public void deleteAbsence(Long id) {
+
+		if(getAbsence(id).getType() == Type.RTT_EMPLOYEUR){
+			this.employerRttService.incrementEmployerRTT(1L, this.employerRttService.getEmployerRTT(1L));
+		}
+
 		this.absenceRepository.deleteById(id);
+
 	}
 
 	@Transactional

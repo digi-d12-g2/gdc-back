@@ -29,7 +29,7 @@ public class Absence extends BaseEntity {
     private Status status;
 
     @ManyToOne
-    @JoinColumn(name = "id_user")
+    @JoinColumn(nullable = true, name = "id_user")
     private User user;
 
     public Absence(
