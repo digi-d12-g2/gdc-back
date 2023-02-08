@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface AbsenceRepository extends JpaRepository<Absence, Long>{
 
-    @Query("SELECT a FROM Absence a join User u WHERE u.id = :id ORDER BY a.date_start DESC")
+    @Query("SELECT a FROM Absence a INNER JOIN User u ON u.id = a.user WHERE u.id = :id AND a.type != 'RTT_EMPLOYEUR' ORDER BY a.date_start DESC")
     public List<Absence> findByUserId(@Param("id") Long id);
     
 }

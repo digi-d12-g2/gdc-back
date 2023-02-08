@@ -2,7 +2,7 @@ package com.service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 import jakarta.transaction.Transactional;
 
@@ -28,8 +28,8 @@ public class AbsenceService {
 
     public AbsenceService(
 		AbsenceRepository absenceRepository,
-		UserRepository userRepository
-	, EmployerRttService employerRttService) {
+		UserRepository userRepository, 
+		EmployerRttService employerRttService) {
 		this.absenceRepository = absenceRepository;
 		this.userRepository = userRepository;
 		this.employerRttService = employerRttService;
@@ -67,29 +67,26 @@ public class AbsenceService {
 			requestAbsence.getReason()
 		);
 
-		Optional<User> optionnalUser = this.userRepository.findById(requestAbsence.getUserId());
-
-        optionnalUser.ifPresentOrElse(
-                (User u) -> {
-                    absence.setUser(u);
-                }, () -> {
-                    throw new ResourceNotFoundException("Utilisateur introuvable");
-                });
-
 		if (checkAbsenceIsValid(absence)){
 
 			if(absence.getType() == Type.RTT_EMPLOYEUR){
 				if(this.employerRttService.checkEmployerRttIsValid(absence)){
 					this.employerRttService.decrementEmployerRTT(1L, this.employerRttService.getEmployerRTT(1L));
-					return this.absenceRepository.save(absence);
 				} else {
-					return null;
+					throw new ResourceNotFoundException("Impossible de créer la demande de congé");
 				}
+			} else {
+				Optional<User> optionnalUser = this.userRepository.findById(requestAbsence.getUserId());
+
+				optionnalUser.ifPresentOrElse(
+						(User u) -> {
+							absence.setUser(u);
+						}, () -> {
+							throw new ResourceNotFoundException("Utilisateur introuvable");
+						});
 			}
 
 			this.absenceRepository.save(absence);
-
-
 
 			ResponseAbsenceDto response = new ResponseAbsenceDto(
 				absence.getId(),
@@ -97,7 +94,7 @@ public class AbsenceService {
 				absence.getDate_end(),
 				absence.getType(),
 				absence.getStatus(),
-				absence.getUser().getId(),
+				Objects.nonNull(absence.getUser())?absence.getUser().getId():null,
 				absence.getReason());
 	
 			return response;
