@@ -1,11 +1,9 @@
 package com.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import com.entity.User;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+import org.springframework.data.jpa.repository.JpaRepository;
 
-    public User findByEmailAndPassword(String email, String password);
+public interface UserRepository extends JpaRepository<User, Long>{
     
 }
