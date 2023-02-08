@@ -9,14 +9,17 @@ import org.springframework.stereotype.Service;
 import com.repository.AbsenceRepository;
 
 import com.entity.Absence;
+import com.enums.Type;
 
 @Service
 public class AbsenceService {
 
     private AbsenceRepository absenceRepository;
+	private EmployerRttService employerRttService;
 
-    public AbsenceService(AbsenceRepository absenceRepository) {
+    public AbsenceService(AbsenceRepository absenceRepository, EmployerRttService employerRttService) {
 		this.absenceRepository = absenceRepository;
+		this.employerRttService = employerRttService;
 	}
 	
 	public List<Absence> getAbsences() {
@@ -31,7 +34,19 @@ public class AbsenceService {
 	public Absence addAbsence(Absence absence) {
 
 		if (checkAbsenceIsValid(absence)){
+
+			if(absence.getType() == Type.RTT_EMPLOYEUR){
+				if(this.employerRttService.checkEmployerRttIsValid(absence)){
+					this.employerRttService.decrementEmployerRTT(1L, this.employerRttService.getEmployerRTT(1L));
+					return this.absenceRepository.save(absence);
+				} else {
+					return null;
+				}
+			}
+
 			return this.absenceRepository.save(absence);
+
+
 		} else {
 			return null;
 		}
@@ -42,6 +57,7 @@ public class AbsenceService {
 		
 		if (checkUpdateIsValid(absence)){
 			Absence absenceToUpdate = getAbsence(id);
+
 			absenceToUpdate.setDate_start(absence.getDate_start());
 			absenceToUpdate.setDate_end(absence.getDate_end());
 			absenceToUpdate.setReason(absence.getReason());
@@ -56,10 +72,14 @@ public class AbsenceService {
 	
 	@Transactional
 	public void deleteAbsence(Long id) {
+
+		if(getAbsence(id).getType() == Type.RTT_EMPLOYEUR){
+			this.employerRttService.incrementEmployerRTT(1L, this.employerRttService.getEmployerRTT(1L));
+		}
+
 		this.absenceRepository.deleteById(id);
+
 	}
-
-
 
 	private boolean checkAbsenceIsValid(Absence absence){
 

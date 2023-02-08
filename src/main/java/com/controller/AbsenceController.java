@@ -39,7 +39,7 @@ public class AbsenceController {
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deleteAbsence(@PathVariable Long id) {
 		this.absenceService.deleteAbsence(id);
-		return ResponseEntity.ok().body(id);
+		return ResponseEntity.ok().body(this.absenceService.getAbsence(id));
 	}
     
     
