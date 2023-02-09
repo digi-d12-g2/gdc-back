@@ -30,11 +30,6 @@ public class AbsenceController {
 	public ResponseEntity<?> getAbsenceFromUser(@PathVariable Long id) {
 		return ResponseEntity.ok().body(this.absenceService.getAbsencesFromUser(id).stream().map(this::convertToDto).collect(Collectors.toList()));
 	}
-
-	@GetMapping("/{id}")
-	public ResponseEntity<?> getAbsence(@PathVariable Long id) {
-		return ResponseEntity.ok().body(this.absenceService.getAbsence(id));
-	}
 	
 	@PostMapping()
 	public ResponseEntity<?> addAbsence(@RequestBody RequestAbsenceDto absence) {
