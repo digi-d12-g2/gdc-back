@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import javax.ws.rs.NotFoundException;
 
+import com.dto.ResponseUserDto;
 import com.entity.User;
 
 import com.repository.UserRepository;
@@ -20,13 +21,28 @@ public class UserService {
     //     this.repository = repository;
     // }
     
-    public User signIn(String email, String password) {
+    public ResponseUserDto signIn(String email, String password) {
         User user = this.repository.findByEmailAndPassword(email, password);
         if (user != null) {
-            return user;
+            return this.convertToDto(user);
         }
         else {
             throw new NotFoundException("User not found");
         }
     }
+    
+	private ResponseUserDto convertToDto(User user) {
+
+        ResponseUserDto userDto = new ResponseUserDto(
+            user.getId(),
+            user.getFirstName(),
+            user.getLastName(),
+            user.getEmail(),
+            user.getIsAdmin(),
+            user.getVacations_avalaible(),
+            user.getRtt()
+        );
+
+		return userDto;
+	}
 }

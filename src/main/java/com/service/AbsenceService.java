@@ -206,11 +206,11 @@ public class AbsenceService {
 	}
 
 	private boolean checkStatusIsInitial(Absence absence){
-		return absence.getStatus().toString().equals("INITIALE");
+		return (absence.getStatus() == Status.INITIALE);
 	}
 
 	private boolean checkStatusIsInitialOrRejete(Absence absence){
-		return (absence.getStatus().toString().equals("INITIAL") || absence.getStatus().toString().equals("REJETEE"));
+		return ((absence.getStatus() == Status.INITIALE) || (absence.getStatus() == Status.REJETEE));
 	}
 
 }
