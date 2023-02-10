@@ -20,7 +20,6 @@ public class EmployerRttService {
 	}
 	
 	public EmployerRTT getEmployerRTT(Long id) {
-
 		return this.employerRttRepository.findById(id).get();
 	}
 

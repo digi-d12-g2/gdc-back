@@ -49,10 +49,12 @@ INSERT INTO `user` (`dtype`, `id`, `email`, `first_name`, `is_admin`, `last_name
 ('', 1, 'karon_miner44@outlook.com', 'Karon', b'1', 'Miner', 'DFsCRHaA3u', 5, 12, '', NULL),
 ('', 2, 'bennie_pratt13@aol.com', 'Bennie', b'0', 'Pratt', '7SwMxLApGp', 4, 2, 'Informatique', NULL),
 ('', 3, 'sam-woods93@gmail.com', 'Sam', b'0', 'Woods', '5zpH3ya8eq', 3, 0, 'Managment', NULL),
-('', 4, 'bennie_pratt13@aol.com', 'Bennie', b'0', 'Pratt', '7SwMxLApGp', 4, 2, '', 2),
-('', 5, 'marcie_rouse40@gmail.com', 'Marcie', b'0', 'Rouse', 'adqDtc9Mdz', 5, 5, '', 2),
-('', 6, 'blanco_daniel80@yahoo.com', 'Daniel', b'0', 'Blanco', 'adqDtc9Mdz', 2, 1, '', 3);
+('', 4, 'marcie_rouse40@gmail.com', 'Marcie', b'0', 'Rouse', 'adqDtc9Mdz', 5, 5, '', 2),
+('', 5, 'blanco_daniel80@yahoo.com', 'Daniel', b'0', 'Blanco', 'adqDtc9Mdz', 2, 1, '', 3);
 
+
+INSERT INTO `employer_rtt` (`id`, `rtt_available`) VALUES
+(1, '7');
 --
 -- Index pour les tables déchargées
 --
@@ -88,6 +90,3 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-
-INSERT INTO `employer_rtt` (`id`, `rtt_available`) VALUES
-(1, '7');

@@ -39,6 +39,9 @@ public class AbsenceService {
 		return this.absenceRepository.findAll();
 	}
 
+	public List<Absence> getEmployerRtt(){
+		return this.absenceRepository.findEmployerRtt();
+	}
 
 	public List<Absence> getAbsencesFromUser(long id) {
 
@@ -122,12 +125,12 @@ public class AbsenceService {
 				absenceToUpdate.getDate_end(),
 				absenceToUpdate.getType(),
 				absenceToUpdate.getStatus(),
-				absenceToUpdate.getUser().getId(),
+				Objects.nonNull(absenceToUpdate.getUser())?absenceToUpdate.getUser().getId():null,
 				absenceToUpdate.getReason());
 	
 			return response;
 		} else {
-			return null;
+			throw new ResourceNotFoundException("Impossible de modifier la demande de congé");
 		}
 
 	}

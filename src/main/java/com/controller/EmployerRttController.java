@@ -18,7 +18,7 @@ public class EmployerRttController {
 	}
 
     @GetMapping
-	public ResponseEntity<?> getEmployerRtt() {
+	public ResponseEntity<?> getSoldeEmployerRtt() {
 		return ResponseEntity.ok().body(this.employerRttService.getEmployerRTT(1L));
 	}
 	
