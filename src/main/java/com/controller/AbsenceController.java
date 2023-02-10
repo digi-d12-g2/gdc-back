@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.dto.RequestAbsenceDto;
 import com.dto.ResponseAbsenceDto;
+import com.dto.ResponseUserDto;
 import com.entity.Absence;
 import com.enums.Status;
 import com.service.AbsenceService;
@@ -29,6 +30,11 @@ public class AbsenceController {
 	@GetMapping("/user/{id}")
 	public ResponseEntity<?> getAbsenceFromUser(@PathVariable Long id) {
 		return ResponseEntity.ok().body(this.absenceService.getAbsencesFromUser(id).stream().map(this::convertToDto).collect(Collectors.toList()));
+	}
+
+	@GetMapping("/manager/{id}")
+	public ResponseEntity<?> getAbsenceFromManager(@PathVariable Long id) {
+		return ResponseEntity.ok().body(this.absenceService.getAbsencesFromUser(id).stream().map(this::convertToDtoAdmin).collect(Collectors.toList()));
 	}
 
 	@GetMapping("/rtt_employer")
@@ -70,6 +76,26 @@ public class AbsenceController {
 			absence.getType(),
 			absence.getStatus(),
 			absence.getUser().getId(),
+			absence.getReason());
+
+		return absenceDto;
+	}
+
+	private ResponseAbsenceDto convertToDtoAdmin(Absence absence) {
+		ResponseUserDto userDto = new ResponseUserDto(
+			absence.getUser().getId(),
+			absence.getUser().getFirstName(),
+			absence.getUser().getLastName(),
+			absence.getUser().getEmail()
+		);
+
+		ResponseAbsenceDto absenceDto = new ResponseAbsenceDto(
+			absence.getId(),
+			absence.getDate_start(),
+			absence.getDate_end(),
+			absence.getType(),
+			absence.getStatus(),
+			userDto,
 			absence.getReason());
 
 		return absenceDto;

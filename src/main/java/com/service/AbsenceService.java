@@ -54,6 +54,11 @@ public class AbsenceService {
 		return this.absenceRepository.findByUserId(id);
 
 	}
+
+	public List<Absence> getAbsencesFromManager(long id) {
+		return this.absenceRepository.findByManagerId(id);
+
+	}
 	
 	public Absence getAbsence(Long id) {
 		return this.absenceRepository.getReferenceById(id);

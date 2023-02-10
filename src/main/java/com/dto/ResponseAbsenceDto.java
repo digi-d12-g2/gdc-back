@@ -13,6 +13,7 @@ public class ResponseAbsenceDto {
     private Status status;
     private String reason;
     private Long userId;
+    private ResponseUserDto user;
 
     public ResponseAbsenceDto(
         Long id, 
@@ -30,6 +31,24 @@ public class ResponseAbsenceDto {
         this.status = status;
         this.reason = reason;
         this.userId = userId;
+    }
+
+    public ResponseAbsenceDto(
+        Long id, 
+        LocalDateTime date_start,
+        LocalDateTime date_end, 
+        Type type,
+        Status status,
+        ResponseUserDto user,
+        String reason
+    ) {
+        this.id = id;
+        this.date_start = date_start;
+        this.date_end = date_end;
+        this.type = type;
+        this.status = status;
+        this.reason = reason;
+        this.user = user;
     }
 
     public ResponseAbsenceDto() {
@@ -89,6 +108,14 @@ public class ResponseAbsenceDto {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public ResponseUserDto getUser() {
+        return this.user;
+    }
+
+    public void setUser(ResponseUserDto user) {
+        this.user = user;
     }
 
 }

@@ -19,6 +19,13 @@ public class ResponseUserDto {
         this.vacations_avalaible = vacations_avalaible;
         this.rtt = rtt;
     }
+
+    public ResponseUserDto(Long id, String firstname, String lastname, String email) {
+        this.id = id;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.email = email;
+    }
         
 
     public ResponseUserDto(){}
