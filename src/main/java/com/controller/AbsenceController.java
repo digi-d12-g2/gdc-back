@@ -31,9 +31,9 @@ public class AbsenceController {
 		return ResponseEntity.ok().body(this.absenceService.getAbsencesFromUser(id).stream().map(this::convertToDto).collect(Collectors.toList()));
 	}
 
-	@GetMapping("/{id}")
-	public ResponseEntity<?> getAbsence(@PathVariable Long id) {
-		return ResponseEntity.ok().body(this.absenceService.getAbsence(id));
+	@GetMapping("/rtt_employer")
+	public ResponseEntity<?> getEmployerRtt(){
+		return ResponseEntity.ok().body(this.absenceService.getEmployerRtt());
 	}
 	
 	@PostMapping()
@@ -60,8 +60,7 @@ public class AbsenceController {
 	public ResponseEntity<?> deleteAbsence(@PathVariable Long id) {
 		this.absenceService.deleteAbsence(id);
 		return ResponseEntity.ok().body(this.absenceService.getAbsence(id));
-	}
-    
+	}    
     
 	private ResponseAbsenceDto convertToDto(Absence absence) {
 		ResponseAbsenceDto absenceDto = new ResponseAbsenceDto(

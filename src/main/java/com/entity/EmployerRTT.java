@@ -4,7 +4,11 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "employer_rtt")
-public class EmployerRTT extends BaseEntity {
+public class EmployerRTT {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     
     @Column(nullable = false)
     private Integer rtt_available;
@@ -16,6 +20,14 @@ public class EmployerRTT extends BaseEntity {
 
     public void setRtt_available(Integer rtt_available) {
         this.rtt_available = rtt_available;
+    }
+
+    public Long getId() {
+        return this.id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
 }
