@@ -40,7 +40,8 @@ public class UserService {
             user.getEmail(),
             user.getIsAdmin(),
             user.getVacations_avalaible(),
-            user.getRtt()
+            user.getRtt(),
+            user.getDepartment()
         );
 
 		return userDto;

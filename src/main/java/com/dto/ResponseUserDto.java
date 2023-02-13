@@ -6,11 +6,12 @@ public class ResponseUserDto {
     private String lastname;
     private String email;
     private Boolean is_admin;
+    private String department;
 	private Integer vacations_avalaible;
     private Integer rtt;
 
 
-    public ResponseUserDto(Long id, String firstname, String lastname, String email, Boolean is_admin, Integer vacations_avalaible, Integer rtt) {
+    public ResponseUserDto(Long id, String firstname, String lastname, String email, Boolean is_admin, Integer vacations_avalaible, Integer rtt, String department) {
         this.id = id;
         this.firstname = firstname;
         this.lastname = lastname;
@@ -18,6 +19,7 @@ public class ResponseUserDto {
         this.is_admin = is_admin;
         this.vacations_avalaible = vacations_avalaible;
         this.rtt = rtt;
+        this.department = department;
     }
 
     public ResponseUserDto(Long id, String firstname, String lastname, String email) {
@@ -88,6 +90,14 @@ public class ResponseUserDto {
 
     public void setRtt(Integer rtt) {
         this.rtt = rtt;
+    }
+
+    public String getDepartment() {
+        return this.department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
     }
 
 }

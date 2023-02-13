@@ -25,6 +25,9 @@ public class User extends BaseEntity {
     @Column(nullable = false)
 	private Integer vacations_avalaible;
 
+    @Column(nullable = false, length = 50)
+	private String department;
+
     @Column(nullable = false)
 	private Integer rtt;
 
@@ -110,6 +113,14 @@ public class User extends BaseEntity {
 
     public void setManager(Manager manager) {
         this.manager = manager;
+    }
+
+    public String getDepartment() {
+        return this.department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
     }
 
 }

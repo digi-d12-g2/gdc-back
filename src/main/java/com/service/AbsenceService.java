@@ -39,6 +39,10 @@ public class AbsenceService {
 		return this.absenceRepository.findAll();
 	}
 
+	public List<Absence> getAbsencesFromManager(long id) {
+		return this.absenceRepository.findByManagerId(id);
+	}
+
 	public List<Absence> getEmployerRtt(){
 		return this.absenceRepository.findEmployerRtt();
 	}
@@ -52,11 +56,6 @@ public class AbsenceService {
 		}
 
 		return this.absenceRepository.findByUserId(id);
-
-	}
-
-	public List<Absence> getAbsencesFromManager(long id) {
-		return this.absenceRepository.findByManagerId(id);
 
 	}
 	
