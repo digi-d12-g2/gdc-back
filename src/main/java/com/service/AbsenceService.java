@@ -43,6 +43,10 @@ public class AbsenceService {
 		return this.absenceRepository.findByManagerId(id);
 	}
 
+	public List<Absence> getAbsencesToValidateFromManager(long id) {
+		return this.absenceRepository.findAbsencesToValidateByManagerId(id);
+	}
+
 	public List<Absence> getEmployerRtt(){
 		return this.absenceRepository.findEmployerRtt();
 	}

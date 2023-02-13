@@ -34,7 +34,7 @@ public class AbsenceController {
 
 	@GetMapping("/manager/{id}")
 	public ResponseEntity<?> getAbsenceFromManager(@PathVariable Long id) {
-		return ResponseEntity.ok().body(this.absenceService.getAbsencesFromManager(id).stream().map(this::convertToDtoAdmin).collect(Collectors.toList()));
+		return ResponseEntity.ok().body(this.absenceService.getAbsencesToValidateFromManager(id).stream().map(this::convertToDtoAdmin).collect(Collectors.toList()));
 	}
 
 	@GetMapping("/rtt_employer")
