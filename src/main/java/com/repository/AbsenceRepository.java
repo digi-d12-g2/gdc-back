@@ -3,6 +3,7 @@ package com.repository;
 import com.entity.Absence;
 
 import java.util.List;
+import java.time.LocalDateTime;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -21,4 +22,14 @@ public interface AbsenceRepository extends JpaRepository<Absence, Long>{
     
     @Query("SELECT a FROM Absence a WHERE a.type = 'RTT_EMPLOYEUR'")
     public List<Absence> findEmployerRtt();
+
+    @Query("SELECT a FROM Absence a WHERE a.status = 'INITIALE' AND a.type != 'RTT_EMPLOYEUR'")
+    public List<Absence> findInitialesAbsences();
+
+    @Query("SELECT a FROM Absence a WHERE a.type = 'RTT_EMPLOYEUR' AND a.status = 'INITIALE'")
+    public List<Absence> findInitialesEmployerRtt();
+
+    @Query("SELECT a FROM Absence a WHERE a.type = 'RTT_EMPLOYEUR' AND a.date_start = :date_start AND a.status = 'VALIDEE'")
+    public Absence findByDate(@Param("date_start") LocalDateTime date_start);
+    
 }

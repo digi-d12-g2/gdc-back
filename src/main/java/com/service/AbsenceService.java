@@ -17,7 +17,6 @@ import com.exception.ResourceNotFoundException;
 import com.enums.*;
 import com.dto.RequestAbsenceDto;
 import com.dto.ResponseAbsenceDto;
-import com.enums.Type;
 
 @Service
 public class AbsenceService {
@@ -71,22 +70,18 @@ public class AbsenceService {
 	public ResponseAbsenceDto addAbsence(RequestAbsenceDto requestAbsence) {
 
 		Absence absence = new Absence(
-			requestAbsence.getDate_start(),
-			requestAbsence.getDate_end(),
+			requestAbsence.getDate_start().plusHours(1),
+			requestAbsence.getDate_end().plusHours(1),
 			requestAbsence.getType(),
 			Status.INITIALE,
 			requestAbsence.getReason()
 		);
 
+		System.out.println(requestAbsence.getDate_start());
+
 		if (checkAbsenceIsValid(absence)){
 
-			if(absence.getType() == Type.RTT_EMPLOYEUR){
-				if(this.employerRttService.checkEmployerRttIsValid(absence)){
-					this.employerRttService.decrementEmployerRTT(1L, this.employerRttService.getEmployerRTT(1L));
-				} else {
-					throw new ResourceNotFoundException("Impossible de créer la demande de congé");
-				}
-			} else {
+			 if(absence.getType() != Type.RTT_EMPLOYEUR){
 				Optional<User> optionnalUser = this.userRepository.findById(requestAbsence.getUserId());
 
 				optionnalUser.ifPresentOrElse(
@@ -113,16 +108,17 @@ public class AbsenceService {
 			throw new ResourceNotFoundException("Impossible de créer la demande de congé");
 		}
 	}
-
+	
 	@Transactional
 	public ResponseAbsenceDto updateAbsence(Long id, Absence absence){
 		
 		if (checkUpdateIsValid(absence)){
 			Absence absenceToUpdate = getAbsence(id);
 
-			absenceToUpdate.setDate_start(absence.getDate_start());
-			absenceToUpdate.setDate_end(absence.getDate_end());
+			absenceToUpdate.setDate_start(absence.getDate_start().plusHours(1));
+			absenceToUpdate.setDate_end(absence.getDate_end().plusHours(1));
 			absenceToUpdate.setReason(absence.getReason());
+			absenceToUpdate.setStatus(Status.INITIALE);
 			absenceToUpdate.setType(absence.getType());
 
 			this.absenceRepository.save(absenceToUpdate);
@@ -181,6 +177,42 @@ public class AbsenceService {
 	
 	}
 
+	@Transactional
+	public void modifyAbsencesStatus() {
+		List<Absence> absences = this.absenceRepository.findInitialesAbsences();
+
+		for(Absence absence : absences) {
+			User user = this.userRepository.getReferenceById(absence.getUser().getId());
+
+			if(user.getVacations_avalaible() > 0){
+				absence.setStatus(Status.EN_ATTENTE_VALIDATION);
+			} else {
+				absence.setStatus(Status.REJETEE);
+			}
+
+			this.absenceRepository.save(absence);
+        }
+	}
+
+	@Transactional
+	public void modifyEmployerRttStatus(){
+
+		List<Absence> absences = this.absenceRepository.findInitialesEmployerRtt();
+
+		for(Absence absence : absences) {
+
+			if(this.employerRttService.checkEmployerRttIsValid(absence) == true){
+				absence.setStatus(Status.VALIDEE);
+				this.employerRttService.decrementEmployerRTT(1L, this.employerRttService.getEmployerRTT(1L));
+			} else {
+				absence.setStatus(Status.REJETEE);
+			}
+
+			this.absenceRepository.save(absence);
+        }
+		
+	}
+	
 	private boolean checkAbsenceIsValid(Absence absence){
 
 		checkDateStartBeforeDateEnd(absence);

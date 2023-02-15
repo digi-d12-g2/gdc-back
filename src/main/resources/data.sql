@@ -53,8 +53,6 @@ INSERT INTO `user` (`dtype`, `id`, `email`, `first_name`, `is_admin`, `last_name
 ('', 5, 'blanco_daniel80@yahoo.com', 'Daniel', b'0', 'Blanco', 'adqDtc9Mdz', 2, 1, '', 3);
 
 
-INSERT INTO `employer_rtt` (`id`, `rtt_available`) VALUES
-(1, '7');
 --
 -- Index pour les tables déchargées
 --
@@ -86,6 +84,10 @@ ALTER TABLE `user`
 ALTER TABLE `user`
   ADD CONSTRAINT `FKdmyn33mfb0rxhxy6uhni98cb` FOREIGN KEY (`id_manager`) REFERENCES `user` (`id`);
 COMMIT;
+
+
+INSERT INTO `employer_rtt` (`id`, `rtt_available`) VALUES
+(1, '7');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
