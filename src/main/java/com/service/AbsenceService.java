@@ -49,6 +49,11 @@ public class AbsenceService {
 	public List<Absence> getEmployerRtt(){
 		return this.absenceRepository.findEmployerRtt();
 	}
+	
+    public List<Absence> getEmployerByDate(Integer year) {
+        return this.absenceRepository.findEmployerRttByYear(year);
+    }
+
 
 	public List<Absence> getEmployerRttList(){
 		return this.absenceRepository.findEmployerRttList();

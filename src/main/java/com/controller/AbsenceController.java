@@ -42,6 +42,11 @@ public class AbsenceController {
 		return ResponseEntity.ok().body(this.absenceService.getEmployerRtt());
 	}
 
+	@GetMapping("/rtt_employer/{year}")
+	public ResponseEntity<?> getEmployerByDate(@PathVariable Integer year){
+		return ResponseEntity.ok().body(this.absenceService.getEmployerByDate(year));
+	}
+
 	@GetMapping("/rtt_employer_list")
 	public ResponseEntity<?> getEmployerRttList(){
 		return ResponseEntity.ok().body(this.absenceService.getEmployerRttList());
