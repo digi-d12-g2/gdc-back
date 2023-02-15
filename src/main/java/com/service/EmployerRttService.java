@@ -1,8 +1,10 @@
 package com.service;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import com.repository.EmployerRttRepository;
+import com.repository.AbsenceRepository;
 import com.entity.EmployerRTT;
 import com.entity.Absence;
 
@@ -14,9 +16,11 @@ import jakarta.transaction.Transactional;
 public class EmployerRttService {
 
     private EmployerRttRepository employerRttRepository;
+    private AbsenceRepository absenceRepository;
 
-    public EmployerRttService(EmployerRttRepository employerRttRepository) {
+    public EmployerRttService(EmployerRttRepository employerRttRepository, AbsenceRepository absenceRepository) {
 		this.employerRttRepository = employerRttRepository;
+        this.absenceRepository = absenceRepository;
 	}
 	
 	public EmployerRTT getEmployerRTT(Long id) {
@@ -44,11 +48,11 @@ public class EmployerRttService {
 	}
 
     protected boolean checkEmployerRttIsValid(Absence absence){             
-        return (checkDateIsAftereNow(absence) && checkIsOnWeek(absence) && checkEmployerRttAvailable() && checkIsSameDay(absence));
+        return (checkDateIsAftereNow(absence) && checkIsOnWeek(absence) && checkEmployerRttAvailable() && checkIsSameDay(absence) && checkEmployerRttExists(absence));
     }
 	
     private boolean checkIsOnWeek(Absence absence){
-		return (absence.getDate_start().getDayOfWeek().toString() != "SATURDAY") || (absence.getDate_start().getDayOfWeek().toString() != "SUNDAY");
+		return (absence.getDate_start().getDayOfWeek().toString() != "SATURDAY") && (absence.getDate_start().getDayOfWeek().toString() != "SUNDAY");
 	}
 
 	private boolean checkDateIsAftereNow(Absence absence){
@@ -58,6 +62,10 @@ public class EmployerRttService {
     private boolean checkEmployerRttAvailable(){
         EmployerRTT employerRtt = this.employerRttRepository.getReferenceById(1L);
         return (employerRtt.getRtt_available() >= 1);
+    }
+
+    private boolean checkEmployerRttExists(Absence absence){
+        return (Objects.isNull(this.absenceRepository.findByDate(absence.getDate_start())));
     }
 
     private boolean checkIsSameDay(Absence absence){
