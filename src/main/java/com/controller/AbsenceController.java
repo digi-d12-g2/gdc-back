@@ -41,6 +41,11 @@ public class AbsenceController {
 	public ResponseEntity<?> getEmployerRtt(){
 		return ResponseEntity.ok().body(this.absenceService.getEmployerRtt());
 	}
+
+	@GetMapping("/rtt_employer_list")
+	public ResponseEntity<?> getEmployerRttList(){
+		return ResponseEntity.ok().body(this.absenceService.getEmployerRttList());
+	}
 	
 	@PostMapping()
 	public ResponseEntity<?> addAbsence(@RequestBody RequestAbsenceDto absence) {

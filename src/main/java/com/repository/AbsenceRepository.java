@@ -23,6 +23,10 @@ public interface AbsenceRepository extends JpaRepository<Absence, Long>{
     @Query("SELECT a FROM Absence a WHERE a.type = 'RTT_EMPLOYEUR'")
     public List<Absence> findEmployerRtt();
 
+    @Query("SELECT a FROM Absence a WHERE a.type = 'RTT_EMPLOYEUR' AND a.status = 'VALIDEE'")
+    public List<Absence> findEmployerRttList();
+
+
     @Query("SELECT a FROM Absence a WHERE a.status = 'INITIALE' AND a.type != 'RTT_EMPLOYEUR'")
     public List<Absence> findInitialesAbsences();
 

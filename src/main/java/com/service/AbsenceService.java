@@ -50,6 +50,10 @@ public class AbsenceService {
 		return this.absenceRepository.findEmployerRtt();
 	}
 
+	public List<Absence> getEmployerRttList(){
+		return this.absenceRepository.findEmployerRttList();
+	}
+
 	public List<Absence> getAbsencesFromUser(long id) {
 
 		Optional<User> optionnalUser = this.userRepository.findById(id);
@@ -76,8 +80,6 @@ public class AbsenceService {
 			Status.INITIALE,
 			requestAbsence.getReason()
 		);
-
-		System.out.println(requestAbsence.getDate_start());
 
 		if (checkAbsenceIsValid(absence)){
 
