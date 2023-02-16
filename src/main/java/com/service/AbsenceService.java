@@ -79,8 +79,8 @@ public class AbsenceService {
 	public ResponseAbsenceDto addAbsence(RequestAbsenceDto requestAbsence) {
 
 		Absence absence = new Absence(
-			requestAbsence.getDate_start().plusHours(1),
-			requestAbsence.getDate_end().plusHours(1),
+			requestAbsence.getDate_start().plusHours(2),
+			requestAbsence.getDate_end().plusHours(2),
 			requestAbsence.getType(),
 			Status.INITIALE,
 			requestAbsence.getReason()
@@ -88,7 +88,7 @@ public class AbsenceService {
 
 		if (checkAbsenceIsValid(absence)){
 
-			 if(absence.getType() != Type.RTT_EMPLOYEUR){
+			if(absence.getType() != Type.RTT_EMPLOYEUR){
 				Optional<User> optionnalUser = this.userRepository.findById(requestAbsence.getUserId());
 
 				optionnalUser.ifPresentOrElse(
@@ -97,11 +97,11 @@ public class AbsenceService {
 						}, () -> {
 							throw new ResourceNotFoundException("Utilisateur introuvable");
 						});
-			}
 
-			Long countL = ChronoUnit.DAYS.between(absence.getDate_start(), absence.getDate_end());
-			Integer count = countL.intValue() + 1;
-			this.userService.decrementUserVacations(absence.getUser().getId(), count);
+				Long countL = ChronoUnit.DAYS.between(absence.getDate_start(), absence.getDate_end());
+				Integer count = countL.intValue() + 1;
+				this.userService.decrementUserVacations(absence.getUser().getId(), count);
+			}
 
 			this.absenceRepository.save(absence);
 
@@ -126,8 +126,8 @@ public class AbsenceService {
 		if (checkUpdateIsValid(absence)){
 			Absence absenceToUpdate = getAbsence(id);
 
-			absenceToUpdate.setDate_start(absence.getDate_start().plusHours(1));
-			absenceToUpdate.setDate_end(absence.getDate_end().plusHours(1));
+			absenceToUpdate.setDate_start(absence.getDate_start().plusHours(2));
+			absenceToUpdate.setDate_end(absence.getDate_end().plusHours(2));
 			absenceToUpdate.setReason(absence.getReason());
 			absenceToUpdate.setStatus(Status.INITIALE);
 			absenceToUpdate.setType(absence.getType());
