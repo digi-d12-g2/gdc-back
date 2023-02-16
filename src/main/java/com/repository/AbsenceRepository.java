@@ -19,15 +19,12 @@ public interface AbsenceRepository extends JpaRepository<Absence, Long>{
 
     @Query("SELECT a FROM Absence a LEFT JOIN User u ON u.id = a.user LEFT JOIN User m ON m.id = u.manager WHERE m.id = :id AND a.type != 'RTT_EMPLOYEUR' AND a.status = 'EN_ATTENTE_VALIDATION' ORDER BY a.date_start DESC")
     public List<Absence> findAbsencesToValidateByManagerId(@Param("id") Long id);
-    
-    @Query("SELECT a FROM Absence a WHERE a.type = 'RTT_EMPLOYEUR'")
-    public List<Absence> findEmployerRtt();
 
     @Query("SELECT a FROM Absence a WHERE a.type = 'RTT_EMPLOYEUR' AND YEAR(date_start) = :year")
-    public List<Absence> findEmployerRttByYear(@Param("year") Integer year);
+    public List<Absence> findEmployerRttForAdmin(@Param("year") Integer year);
 
-    @Query("SELECT a FROM Absence a WHERE a.type = 'RTT_EMPLOYEUR' AND a.status = 'VALIDEE'")
-    public List<Absence> findEmployerRttList();
+    @Query("SELECT a FROM Absence a WHERE a.type = 'RTT_EMPLOYEUR' AND a.status = 'VALIDEE' AND YEAR(date_start) = :year")
+    public List<Absence> findEmployerRttForEmployee(@Param("year") Integer year);
 
     @Query("SELECT a FROM Absence a WHERE a.status = 'INITIALE' AND a.type != 'RTT_EMPLOYEUR'")
     public List<Absence> findInitialesAbsences();

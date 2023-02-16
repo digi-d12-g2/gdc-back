@@ -45,18 +45,13 @@ public class AbsenceService {
 	public List<Absence> getAbsencesToValidateFromManager(long id) {
 		return this.absenceRepository.findAbsencesToValidateByManagerId(id);
 	}
-
-	public List<Absence> getEmployerRtt(){
-		return this.absenceRepository.findEmployerRtt();
-	}
 	
-    public List<Absence> getEmployerByDate(Integer year) {
-        return this.absenceRepository.findEmployerRttByYear(year);
+    public List<Absence> getEmployerRttAdmin(Integer year) {
+        return this.absenceRepository.findEmployerRttForAdmin(year);
     }
 
-
-	public List<Absence> getEmployerRttList(){
-		return this.absenceRepository.findEmployerRttList();
+	public List<Absence> getEmployerRttUser(Integer year){
+		return this.absenceRepository.findEmployerRttForEmployee(year);
 	}
 
 	public List<Absence> getAbsencesFromUser(long id) {
@@ -211,13 +206,12 @@ public class AbsenceService {
 			if(this.employerRttService.checkEmployerRttIsValid(absence) == true){
 				absence.setStatus(Status.VALIDEE);
 				this.employerRttService.decrementEmployerRTT(1L, this.employerRttService.getEmployerRTT(1L));
+				this.absenceRepository.save(absence);
 			} else {
-				absence.setStatus(Status.REJETEE);
+				this.absenceRepository.deleteById(absence.getId());
 			}
-
-			this.absenceRepository.save(absence);
+			
         }
-		
 	}
 	
 	private boolean checkAbsenceIsValid(Absence absence){

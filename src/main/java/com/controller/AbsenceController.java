@@ -37,19 +37,14 @@ public class AbsenceController {
 		return ResponseEntity.ok().body(this.absenceService.getAbsencesToValidateFromManager(id).stream().map(this::convertToDtoAdmin).collect(Collectors.toList()));
 	}
 
-	@GetMapping("/rtt_employer")
-	public ResponseEntity<?> getEmployerRtt(){
-		return ResponseEntity.ok().body(this.absenceService.getEmployerRtt());
+	@GetMapping("/rtt_employer_admin/{year}")
+	public ResponseEntity<?> getEmployerRttAdmin(@PathVariable Integer year){
+		return ResponseEntity.ok().body(this.absenceService.getEmployerRttAdmin(year));
 	}
 
-	@GetMapping("/rtt_employer/{year}")
-	public ResponseEntity<?> getEmployerByDate(@PathVariable Integer year){
-		return ResponseEntity.ok().body(this.absenceService.getEmployerByDate(year));
-	}
-
-	@GetMapping("/rtt_employer_list")
-	public ResponseEntity<?> getEmployerRttList(){
-		return ResponseEntity.ok().body(this.absenceService.getEmployerRttList());
+	@GetMapping("/rtt_employer_employee/{year}")
+	public ResponseEntity<?> getEmployerRttList(@PathVariable Integer year){
+		return ResponseEntity.ok().body(this.absenceService.getEmployerRttUser(year));
 	}
 	
 	@PostMapping()
