@@ -3,7 +3,7 @@ package com.repository;
 import com.entity.Absence;
 
 import java.util.List;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -33,6 +33,12 @@ public interface AbsenceRepository extends JpaRepository<Absence, Long>{
     public List<Absence> findInitialesEmployerRtt();
 
     @Query("SELECT a FROM Absence a WHERE a.type = 'RTT_EMPLOYEUR' AND a.date_start = :date_start AND a.status = 'VALIDEE'")
-    public Absence findByDate(@Param("date_start") LocalDateTime date_start);
+    public Absence findByDate(@Param("date_start") LocalDate date_start);
+
+    @Query("SELECT a FROM Absence a WHERE (a.date_start = :firstDate OR a.date_end = :firstDate OR a.date_start = :secondDate OR a.date_end = :secondDate) AND a.type = 'RTT_EMPLOYEUR'")
+    public List<Absence> getRttEmployeursFromTwoDates(@Param("firstDate") LocalDate firstDate, @Param("secondDate") LocalDate secondDate);
+
+    @Query("SELECT a FROM Absence a LEFT JOIN User u ON u.id = a.user WHERE (( a.date_start <= :firstDate AND a.date_end >= :secondDate ) OR ( a.date_start <= :firstDate AND a.date_end >= :secondDate AND a.date_start >= :secondDate ) OR ( a.date_start >= :firstDate AND a.date_start <= :secondDate AND a.date_end >= :secondDate ) OR ( a.date_start >= :firstDate AND a.date_end <= :secondDate )) AND a.id != :id AND u.id = :userId")
+    public List<Absence> getAbsencesFromTwoDatesRangeAndAbsenceIdAndUserId(@Param("firstDate") LocalDate firstDate, @Param("secondDate") LocalDate secondDate, @Param("id") Long id, @Param("userId") Long userId);
     
 }

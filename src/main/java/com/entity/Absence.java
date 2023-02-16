@@ -5,17 +5,17 @@ import jakarta.persistence.*;
 import com.enums.Status;
 import com.enums.Type;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "absence")
 public class Absence extends BaseEntity {
     
     @Column(nullable = false)
-    private LocalDateTime date_start;
+    private LocalDate date_start;
 
     @Column(nullable = false)
-    private LocalDateTime date_end;
+    private LocalDate date_end;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 25)
@@ -33,8 +33,8 @@ public class Absence extends BaseEntity {
     private User user;
 
     public Absence(
-        LocalDateTime date_start,
-        LocalDateTime date_end,
+        LocalDate date_start,
+        LocalDate date_end,
         Type type,
         Status status,
         String reason
@@ -48,19 +48,19 @@ public class Absence extends BaseEntity {
 
     public Absence() {}
 
-    public LocalDateTime getDate_start() {
+    public LocalDate getDate_start() {
         return this.date_start;
     }
 
-    public void setDate_start(LocalDateTime date_start) {
+    public void setDate_start(LocalDate date_start) {
         this.date_start = date_start;
     }
 
-    public LocalDateTime getDate_end() {
+    public LocalDate getDate_end() {
         return this.date_end;
     }
 
-    public void setDate_end(LocalDateTime date_end) {
+    public void setDate_end(LocalDate date_end) {
         this.date_end = date_end;
     }
 
