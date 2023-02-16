@@ -75,6 +75,16 @@ public class PublicHolidayService {
 		}
 	}
 
+    @Transactional
+	public PublicHolidays updatePublicHoliday(Long id, PublicHolidays publicHoliday) {
+
+        PublicHolidays publicHolidayToUpdate = findById(id);
+
+        publicHolidayToUpdate.setDate(publicHoliday.getDate());
+        publicHolidayToUpdate.setLabel(publicHoliday.getLabel());
+
+        return this.repository.save(publicHolidayToUpdate);
+    }
 
     public List<PublicHolidays> list() {
         return this.repository.findAll();
@@ -84,8 +94,8 @@ public class PublicHolidayService {
         return this.repository.findSortDate(year);
     }
 
-    public Optional<PublicHolidays> findById(Integer id) {
-        return this.repository.findById(id);
+    public PublicHolidays findById(Long id) {
+        return this.repository.getReferenceById(id);
     }
 
     /**
@@ -93,7 +103,7 @@ public class PublicHolidayService {
      * @return String
      * @throws NotFoundException
     */
-    public String delete(Integer id) throws NotFoundException {
+    public String delete(Long id) throws NotFoundException {
 
         Optional<PublicHolidays>publicHolidays = this.repository.findById(id);
 

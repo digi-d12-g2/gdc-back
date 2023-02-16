@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.entity.PublicHolidays;
@@ -38,8 +39,13 @@ public class PublicHolidayController {
 		return ResponseEntity.ok().body(this.publicHolidayService.addPublicHoliday(publicHoliday));
 	}
 
+    @PutMapping("/{id}")
+	public void updatePublicHoliday(@PathVariable Long id, @RequestBody PublicHolidays publicHoliday) {
+		publicHolidayService.updatePublicHoliday(id, publicHoliday);
+	}
+
     @DeleteMapping("{id}")
-    public ResponseEntity<?> deletePublicHoliday(@PathVariable("id") Integer id) throws NotFoundException {
+    public ResponseEntity<?> deletePublicHoliday(@PathVariable("id") Long id) throws NotFoundException {
         try {
             String deleteResponse = this.publicHolidayService.delete(id);
 
