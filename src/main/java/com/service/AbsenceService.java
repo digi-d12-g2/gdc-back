@@ -98,11 +98,10 @@ public class AbsenceService {
 							throw new ResourceNotFoundException("Utilisateur introuvable");
 						});
 
-				Long countL = ChronoUnit.DAYS.between(absence.getDate_start(), absence.getDate_end());
-				Integer count = countL.intValue() + 1;
+				Integer count = getCount(absence);
 				this.userService.decrementUserVacations(absence.getUser().getId(), count);
 			}
-
+			
 			this.absenceRepository.save(absence);
 
 			ResponseAbsenceDto response = new ResponseAbsenceDto(
@@ -125,6 +124,24 @@ public class AbsenceService {
 		
 		if (checkUpdateIsValid(absence)){
 			Absence absenceToUpdate = getAbsence(id);
+
+			// System.out.println(getCount(absence));
+			// System.out.println(getCount(absenceToUpdate));
+
+			if(absence.getType() != Type.RTT_EMPLOYEUR){
+
+				// if(getCount(absence) > getCount(absenceToUpdate)){
+				// 	Integer diff = getCount(absence) - getCount(absenceToUpdate);
+				// 	this.userService.decrementUserVacations(absence.getUser().getId(), diff);
+				// } else if(getCount(absence) < getCount(absenceToUpdate)) {
+				// 	Integer diff = getCount(absenceToUpdate) - getCount(absence);
+				// 	this.userService.incrementUserVacations(absence.getUser().getId(), diff);
+				// }
+
+				Integer count = getCount(absence);
+				System.out.println(count);
+				this.userService.decrementUserVacations(absenceToUpdate.getUser().getId(), count);
+			}
 
 			absenceToUpdate.setDate_start(absence.getDate_start().plusHours(2));
 			absenceToUpdate.setDate_end(absence.getDate_end().plusHours(2));
@@ -156,8 +173,7 @@ public class AbsenceService {
 		if((getAbsence(id).getType() == Type.RTT_EMPLOYEUR) && getAbsence(id).getStatus() == Status.VALIDEE){
 			this.employerRttService.incrementEmployerRTT(1L, this.employerRttService.getEmployerRTT(1L));
 		} else if ((getAbsence(id).getType() != Type.RTT_EMPLOYEUR) && getAbsence(id).getStatus() == Status.VALIDEE) {
-			Long countL = ChronoUnit.DAYS.between(getAbsence(id).getDate_start(), getAbsence(id).getDate_end());
-			Integer count = countL.intValue() + 1;
+			Integer count = getCount(getAbsence(id));
 			this.userService.incrementUserVacations(getAbsence(id).getUser().getId(), count);
 		}
 
@@ -174,8 +190,7 @@ public class AbsenceService {
 			absenceToUpdate.setStatus(status);
 
 			if(status == Status.REJETEE){
-				Long countL = ChronoUnit.DAYS.between(absence.get().getDate_start(), absence.get().getDate_end());
-				Integer count = countL.intValue() + 1;
+				Integer count = getCount(absence.get());
 				this.userService.incrementUserVacations(absence.get().getUser().getId(), count);
 			}
 
@@ -208,8 +223,7 @@ public class AbsenceService {
 			if(user.getVacations_avalaible() > 0){
 				absence.setStatus(Status.EN_ATTENTE_VALIDATION);
 			} else {
-				Long countL = ChronoUnit.DAYS.between(absence.getDate_start(), absence.getDate_end());
-				Integer count = countL.intValue() + 1;
+				Integer count = getCount(absence);
 				this.userService.incrementUserVacations(absence.getUser().getId(), count);
 
 				absence.setStatus(Status.REJETEE);
@@ -235,6 +249,18 @@ public class AbsenceService {
 			}
 			
         }
+	}
+
+	private Integer getCount(Absence absence){
+		System.out.println("Date deb  : " + absence.getDate_start());
+		System.out.println("Date fin  : " + absence.getDate_end());
+
+		Long countL = ChronoUnit.DAYS.between(absence.getDate_start(), absence.getDate_end());
+		System.out.println("COUNTL  : " + countL);
+		Integer count = countL.intValue() + 1;
+		System.out.println("COUNT  : " + count);
+
+		return count;
 	}
 	
 	private boolean checkAbsenceIsValid(Absence absence){
