@@ -1,14 +1,14 @@
 package com.dto;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import com.enums.Status;
 import com.enums.Type;
 
 public class RequestAbsenceDto {
     private Long id;
-    private LocalDateTime date_start;
-    private LocalDateTime date_end;
+    private LocalDate date_start;
+    private LocalDate date_end;
     private Type type;
     private Status status;
     private String reason;
@@ -16,8 +16,8 @@ public class RequestAbsenceDto {
 
     public RequestAbsenceDto(
         Long id, 
-        LocalDateTime date_start,
-        LocalDateTime date_end, 
+        LocalDate date_start,
+        LocalDate date_end, 
         Type type,
         Status status,
         Long userId,
@@ -42,19 +42,19 @@ public class RequestAbsenceDto {
         this.id = id;
     }
 
-    public LocalDateTime getDate_start() {
+    public LocalDate getDate_start() {
         return this.date_start;
     }
 
-    public void setDate_start(LocalDateTime date_start) {
+    public void setDate_start(LocalDate date_start) {
         this.date_start = date_start;
     }
 
-    public LocalDateTime getDate_end() {
+    public LocalDate getDate_end() {
         return this.date_end;
     }
 
-    public void setDate_end(LocalDateTime date_end) {
+    public void setDate_end(LocalDate date_end) {
         this.date_end = date_end;
     }
 
