@@ -8,6 +8,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Objects;
 
+import jakarta.transaction.Transactional;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
@@ -16,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.entity.PublicHolidays;
 import com.repository.PublicHolidayRepository;
+import com.exception.ResourceNotFoundException;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -29,7 +31,7 @@ public class PublicHolidayService {
         this.repository = repository;
     }
     
-    public void addPublicHolidays() {
+    public void apiAddPublicHolidays() {
         final String uri = "https://calendrier.api.gouv.fr/jours-feries/metropole.json";
 
         RestTemplate restTemplate = new RestTemplate();
@@ -47,7 +49,7 @@ public class PublicHolidayService {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); 
                 LocalDate date = LocalDate.parse(dateStr, formatter);
 
-                if(Objects.isNull(this.repository.findByDate(date))){
+                if(checkDateNotExists(date)){
                     PublicHolidays publicHoliday = new PublicHolidays();
 
                     publicHoliday.setLabel(mapentry.getValue().toString());
@@ -62,12 +64,24 @@ public class PublicHolidayService {
            e.printStackTrace();
         }
 
-       
     }
+
+    @Transactional
+	public PublicHolidays addPublicHoliday(PublicHolidays publicHoliday) {
+		if (checkPublicHolidayIsValid(publicHoliday)){
+			return this.repository.save(publicHoliday);
+		} else {
+			throw new ResourceNotFoundException("Impossible de créer le jour férié");
+		}
+	}
 
 
     public List<PublicHolidays> list() {
         return this.repository.findAll();
+    }
+
+    public List<PublicHolidays> listSortDate(Integer year) {
+        return this.repository.findSortDate(year);
     }
 
     public Optional<PublicHolidays> findById(Integer id) {
@@ -90,4 +104,12 @@ public class PublicHolidayService {
 			throw new NotFoundException();
         }
     }
+
+    private boolean checkPublicHolidayIsValid(PublicHolidays publicHoliday){
+        return checkDateNotExists(publicHoliday.getDate());
+    }
+
+    private boolean checkDateNotExists(LocalDate date){
+        return (Objects.isNull(this.repository.findByDate(date)));
+	}
 }

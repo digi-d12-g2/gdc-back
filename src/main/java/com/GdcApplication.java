@@ -12,6 +12,6 @@ public class GdcApplication {
 	public static void main(String[] args) {
 		ApplicationContext ctx = SpringApplication.run(GdcApplication.class, args);
 		PublicHolidayService publicHolidayService = ctx.getBean(PublicHolidayService.class);
-		publicHolidayService.addPublicHolidays();
+		publicHolidayService.apiAddPublicHolidays();
 	}
 }

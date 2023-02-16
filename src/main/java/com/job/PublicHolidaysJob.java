@@ -16,6 +16,6 @@ public class PublicHolidaysJob implements Job {
 
     @Override
     public void execute(JobExecutionContext arg0) throws JobExecutionException {
-        this.publicHolidayService.addPublicHolidays();
+        this.publicHolidayService.apiAddPublicHolidays();
     }
 }

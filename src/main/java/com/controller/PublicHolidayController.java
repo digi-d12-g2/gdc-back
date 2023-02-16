@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.entity.PublicHolidays;
 import com.service.PublicHolidayService;
@@ -26,10 +28,15 @@ public class PublicHolidayController {
         this.publicHolidayService = publicHolidayService;
     }
 
-    @GetMapping
-    public List<PublicHolidays> list() {
-        return this.publicHolidayService.list();
+    @GetMapping("/{year}")
+    public List<PublicHolidays> list(@PathVariable("year") Integer year) {
+        return this.publicHolidayService.listSortDate(year);
     }
+
+    @PostMapping()
+	public ResponseEntity<?> addPublicHoliday(@RequestBody PublicHolidays publicHoliday) {
+		return ResponseEntity.ok().body(this.publicHolidayService.addPublicHoliday(publicHoliday));
+	}
 
     @DeleteMapping("{id}")
     public ResponseEntity<?> deletePublicHoliday(@PathVariable("id") Integer id) throws NotFoundException {
