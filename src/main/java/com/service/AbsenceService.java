@@ -339,7 +339,7 @@ public class AbsenceService {
 	}
 
 	private boolean checkDateStartBeforeDateEnd(Absence absence){
-		return absence.getDate_start().isBefore(absence.getDate_end());
+		return (absence.getDate_start().isBefore(absence.getDate_end()) | absence.getDate_start().isEqual(absence.getDate_end()));
 	}
 
 	private boolean checkCongesSansSoldeNeedReason(Absence absence){
