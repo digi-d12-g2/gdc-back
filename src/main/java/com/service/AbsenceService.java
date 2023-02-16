@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Objects;
 
+import java.time.temporal.ChronoUnit;
+
 import jakarta.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
@@ -24,14 +26,17 @@ public class AbsenceService {
     private AbsenceRepository absenceRepository;
 	private UserRepository userRepository;
 	private EmployerRttService employerRttService;
+	private UserService userService;
 
     public AbsenceService(
 		AbsenceRepository absenceRepository,
 		UserRepository userRepository, 
-		EmployerRttService employerRttService) {
+		EmployerRttService employerRttService,
+		UserService userService) {
 		this.absenceRepository = absenceRepository;
 		this.userRepository = userRepository;
 		this.employerRttService = employerRttService;
+		this.userService = userService;
 	}
 	
 	public List<Absence> getAbsences() {
@@ -94,6 +99,10 @@ public class AbsenceService {
 						});
 			}
 
+			Long countL = ChronoUnit.DAYS.between(absence.getDate_start(), absence.getDate_end());
+			Integer count = countL.intValue() + 1;
+			this.userService.decrementUserVacations(absence.getUser().getId(), count);
+
 			this.absenceRepository.save(absence);
 
 			ResponseAbsenceDto response = new ResponseAbsenceDto(
@@ -144,7 +153,7 @@ public class AbsenceService {
 	@Transactional
 	public void deleteAbsence(Long id) {
 
-		if(getAbsence(id).getType() == Type.RTT_EMPLOYEUR){
+		if((getAbsence(id).getType() == Type.RTT_EMPLOYEUR) && getAbsence(id).getStatus() == Status.VALIDEE){
 			this.employerRttService.incrementEmployerRTT(1L, this.employerRttService.getEmployerRTT(1L));
 		}
 
@@ -159,6 +168,12 @@ public class AbsenceService {
 		if(absence.isPresent() && absence.get().getStatus().toString().equals("EN_ATTENTE_VALIDATION")) {
 			Absence absenceToUpdate = absence.get();
 			absenceToUpdate.setStatus(status);
+
+			if(status == Status.REJETEE){
+				Long countL = ChronoUnit.DAYS.between(absence.get().getDate_start(), absence.get().getDate_end());
+				Integer count = countL.intValue() + 1;
+				this.userService.incrementUserVacations(absence.get().getUser().getId(), count);
+			}
 
 			this.absenceRepository.save(absenceToUpdate);
 	
@@ -189,6 +204,10 @@ public class AbsenceService {
 			if(user.getVacations_avalaible() > 0){
 				absence.setStatus(Status.EN_ATTENTE_VALIDATION);
 			} else {
+				Long countL = ChronoUnit.DAYS.between(absence.getDate_start(), absence.getDate_end());
+				Integer count = countL.intValue() + 1;
+				this.userService.incrementUserVacations(absence.getUser().getId(), count);
+
 				absence.setStatus(Status.REJETEE);
 			}
 

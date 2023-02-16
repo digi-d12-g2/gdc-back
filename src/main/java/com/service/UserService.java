@@ -10,6 +10,8 @@ import com.entity.User;
 
 import com.repository.UserRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class UserService {
 
@@ -30,7 +32,11 @@ public class UserService {
             throw new NotFoundException("User not found");
         }
     }
-    
+
+    public User getUser(Long id) {
+		return this.repository.getReferenceById(id);
+	}
+
 	private ResponseUserDto convertToDto(User user) {
 
         ResponseUserDto userDto = new ResponseUserDto(
@@ -46,4 +52,25 @@ public class UserService {
 
 		return userDto;
 	}
+
+    @Transactional
+	public User decrementUserVacations(Long id, Integer count){
+		
+        User userToDecrement = getUser(id);
+        userToDecrement.setVacations_avalaible(userToDecrement.getVacations_avalaible() - count);
+
+        return this.repository.save(userToDecrement);
+
+	}
+
+    @Transactional
+	public User incrementUserVacations(Long id, Integer count){
+		
+        User userToIncrement = getUser(id);
+        userToIncrement.setVacations_avalaible(userToIncrement.getVacations_avalaible() + count);
+
+        return this.repository.save(userToIncrement);
+
+	}
+
 }
