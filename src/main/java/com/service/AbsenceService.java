@@ -1,5 +1,6 @@
 package com.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Objects;
@@ -12,8 +13,10 @@ import org.springframework.stereotype.Service;
 
 import com.repository.AbsenceRepository;
 import com.repository.UserRepository;
+import com.repository.PublicHolidayRepository;
 import com.entity.Absence;
 import com.entity.User;
+import com.entity.PublicHolidays;
 import com.exception.ResourceNotFoundException;
 
 import com.enums.*;
@@ -24,19 +27,23 @@ import com.dto.ResponseAbsenceDto;
 public class AbsenceService {
 
     private AbsenceRepository absenceRepository;
-	private UserRepository userRepository;
-	private EmployerRttService employerRttService;
-	private UserService userService;
+    private UserRepository userRepository;
+    private EmployerRttService employerRttService;
+    private PublicHolidayRepository publicHolidayRepository;
+    private UserService userService;
 
     public AbsenceService(
 		AbsenceRepository absenceRepository,
 		UserRepository userRepository, 
 		EmployerRttService employerRttService,
-		UserService userService) {
+		PublicHolidayRepository publicHolidayRepository,
+    UserService userService
+	) {
 		this.absenceRepository = absenceRepository;
 		this.userRepository = userRepository;
 		this.employerRttService = employerRttService;
-		this.userService = userService;
+		this.publicHolidayRepository = publicHolidayRepository;
+    this.userService = userService;
 	}
 	
 	public List<Absence> getAbsences() {
@@ -75,29 +82,34 @@ public class AbsenceService {
 		return this.absenceRepository.getReferenceById(id);
 	}
 	
+	/**
+	 * Création d'une absence
+	 * @param requestAbsence
+	 * @return
+	 */
 	@Transactional
 	public ResponseAbsenceDto addAbsence(RequestAbsenceDto requestAbsence) {
 
 		Absence absence = new Absence(
-			requestAbsence.getDate_start().plusHours(1),
-			requestAbsence.getDate_end().plusHours(1),
+			requestAbsence.getDate_start(),
+			requestAbsence.getDate_end(),
 			requestAbsence.getType(),
 			Status.INITIALE,
 			requestAbsence.getReason()
 		);
 
-		if (checkAbsenceIsValid(absence)){
+		if(absence.getType() != Type.RTT_EMPLOYEUR){
+			Optional<User> optionnalUser = this.userRepository.findById(requestAbsence.getUserId());
 
-			 if(absence.getType() != Type.RTT_EMPLOYEUR){
-				Optional<User> optionnalUser = this.userRepository.findById(requestAbsence.getUserId());
+			optionnalUser.ifPresentOrElse(
+					(User u) -> {
+						absence.setUser(u);
+					}, () -> {
+						throw new ResourceNotFoundException("Utilisateur introuvable");
+					});
+		}
 
-				optionnalUser.ifPresentOrElse(
-						(User u) -> {
-							absence.setUser(u);
-						}, () -> {
-							throw new ResourceNotFoundException("Utilisateur introuvable");
-						});
-			}
+		if ( ( absence.getType() != Type.RTT_EMPLOYEUR && checkAbsenceIsValid(absence)) | ( absence.getType() == Type.RTT_EMPLOYEUR && checkRttIsValid(absence)  ) ){
 
 			Long countL = ChronoUnit.DAYS.between(absence.getDate_start(), absence.getDate_end());
 			Integer count = countL.intValue() + 1;
@@ -126,8 +138,8 @@ public class AbsenceService {
 		if (checkUpdateIsValid(absence)){
 			Absence absenceToUpdate = getAbsence(id);
 
-			absenceToUpdate.setDate_start(absence.getDate_start().plusHours(1));
-			absenceToUpdate.setDate_end(absence.getDate_end().plusHours(1));
+			absenceToUpdate.setDate_start(absence.getDate_start());
+			absenceToUpdate.setDate_end(absence.getDate_end());
 			absenceToUpdate.setReason(absence.getReason());
 			absenceToUpdate.setStatus(Status.INITIALE);
 			absenceToUpdate.setType(absence.getType());
@@ -236,29 +248,85 @@ public class AbsenceService {
 			
         }
 	}
+
+	private boolean checkRttIsValid(Absence absence) {
+		if(
+			checkDateStartBeforeDateEnd(absence) &&
+			checkDateAndTypeNotNull(absence) && 
+			checkStatusIsInitial(absence) &&
+			checkDatesAreNotPublicHoliday(absence) &&
+			checkDatesAreNotRttEmployer(absence) &&
+			checkDatesAreNotWeekEnd(absence) &&
+			checkNoDateInPast(absence)
+		) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 	
 	private boolean checkAbsenceIsValid(Absence absence){
 
-		checkDateStartBeforeDateEnd(absence);
-		checkCongesSansSoldeNeedReason(absence);
-		checkDateAndTypeNotNull(absence);
-		checkStatusIsInitial(absence);
-
-		/** il manque date début ne peut pas être un jour férié, rtt employeurs ou w-e, pareil pour date fin */
-		/** il manque le chevauchement */
-
-		return true;
-
+		if(
+			checkDateStartBeforeDateEnd(absence) &&
+			checkCongesSansSoldeNeedReason(absence) &&
+			checkDateAndTypeNotNull(absence) && 
+			checkStatusIsInitial(absence) &&
+			checkDatesAreNotPublicHoliday(absence) &&
+			checkDatesAreNotRttEmployer(absence) &&
+			checkDatesAreNotWeekEnd(absence) &&
+			checkNoAbsenceInDateRange(absence)
+		) {
+			return true;
+		} else {
+			return false;
+		}
+		
 	}
 
 	private boolean checkUpdateIsValid(Absence absence){
 
-		checkCongesSansSoldeNeedReason(absence);
-		checkStatusIsInitialOrRejete(absence);
-
-		return true;
+		if(
+			checkCongesSansSoldeNeedReason(absence) &&
+			checkStatusIsInitialOrRejete(absence) &&
+			checkNoAbsenceInDateRange(absence)
+		) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
+	private Boolean checkDatesAreNotPublicHoliday(Absence absence) {
+		List<PublicHolidays> publicHolidays = this.publicHolidayRepository.getPublicHolidaysFromTwoDates(absence.getDate_start(), absence.getDate_end());
+		
+		return publicHolidays.isEmpty();
+	}
+
+	private Boolean checkDatesAreNotRttEmployer(Absence absence) {
+		List<Absence> absences = this.absenceRepository.getRttEmployeursFromTwoDates(absence.getDate_start(), absence.getDate_end());
+
+		return absences.isEmpty();
+	}
+
+	private Boolean checkDatesAreNotWeekEnd(Absence absence) {
+		if (
+			absence.getDate_start().getDayOfWeek().toString().equals("SUNDAY") ||
+			absence.getDate_start().getDayOfWeek().toString().equals("SATURDAY") ||
+			absence.getDate_end().getDayOfWeek().toString().equals("SUNDAY") ||
+			absence.getDate_end().getDayOfWeek().toString().equals("SATURDAY")
+		) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	private Boolean checkNoAbsenceInDateRange(Absence absence) {
+		List<Absence> absences = this.absenceRepository.getAbsencesFromTwoDatesRangeAndAbsenceIdAndUserId(absence.getDate_start(), absence.getDate_end(), absence.getId(), absence.getUser().getId());
+
+		return absences.isEmpty();
+	}
 
 	private boolean checkDateStartBeforeDateEnd(Absence absence){
 		return absence.getDate_start().isBefore(absence.getDate_end());
@@ -278,6 +346,10 @@ public class AbsenceService {
 
 	private boolean checkStatusIsInitialOrRejete(Absence absence){
 		return ((absence.getStatus() == Status.INITIALE) || (absence.getStatus() == Status.REJETEE));
+	}
+
+	private boolean checkNoDateInPast(Absence absence) {
+		return absence.getDate_start().isAfter(LocalDate.now());
 	}
 
 }

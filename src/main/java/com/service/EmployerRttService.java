@@ -1,6 +1,6 @@
 package com.service;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Objects;
 
 import com.repository.EmployerRttRepository;
@@ -56,7 +56,7 @@ public class EmployerRttService {
 	}
 
 	private boolean checkDateIsAftereNow(Absence absence){
-		return (absence.getDate_start().isAfter(LocalDateTime.now()));
+		return (absence.getDate_start().isAfter(LocalDate.now()));
 	}
 
     private boolean checkEmployerRttAvailable(){
