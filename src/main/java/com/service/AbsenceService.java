@@ -155,6 +155,10 @@ public class AbsenceService {
 
 		if((getAbsence(id).getType() == Type.RTT_EMPLOYEUR) && getAbsence(id).getStatus() == Status.VALIDEE){
 			this.employerRttService.incrementEmployerRTT(1L, this.employerRttService.getEmployerRTT(1L));
+		} else if ((getAbsence(id).getType() != Type.RTT_EMPLOYEUR) && getAbsence(id).getStatus() == Status.VALIDEE) {
+			Long countL = ChronoUnit.DAYS.between(getAbsence(id).getDate_start(), getAbsence(id).getDate_end());
+			Integer count = countL.intValue() + 1;
+			this.userService.incrementUserVacations(getAbsence(id).getUser().getId(), count);
 		}
 
 		this.absenceRepository.deleteById(id);
