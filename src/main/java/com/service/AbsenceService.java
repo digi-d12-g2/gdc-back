@@ -287,6 +287,7 @@ public class AbsenceService {
 	private boolean checkUpdateIsValid(Absence absence){
 
 		if(
+			checkDateStartBeforeDateEnd(absence) &&
 			checkCongesSansSoldeNeedReason(absence) &&
 			checkStatusIsInitialOrRejete(absence) &&
 			checkNoAbsenceInDateRange(absence)
