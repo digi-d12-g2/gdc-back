@@ -80,8 +80,10 @@ public class PublicHolidayService {
 
         PublicHolidays publicHolidayToUpdate = findById(id);
 
-        publicHolidayToUpdate.setDate(publicHoliday.getDate());
-        publicHolidayToUpdate.setLabel(publicHoliday.getLabel());
+        if(checkUpdatePublicHolidayIsValid(publicHolidayToUpdate.getId(), publicHoliday.getDate())){
+            publicHolidayToUpdate.setDate(publicHoliday.getDate());
+            publicHolidayToUpdate.setLabel(publicHoliday.getLabel());
+        }
 
         return this.repository.save(publicHolidayToUpdate);
     }
@@ -117,6 +119,10 @@ public class PublicHolidayService {
 
     private boolean checkPublicHolidayIsValid(PublicHolidays publicHoliday){
         return checkDateNotExists(publicHoliday.getDate());
+    }
+
+    private boolean checkUpdatePublicHolidayIsValid(Long id, LocalDate date){
+        return (Objects.isNull(this.repository.findByDateNotSameId(date, id)));
     }
 
     private boolean checkDateNotExists(LocalDate date){
