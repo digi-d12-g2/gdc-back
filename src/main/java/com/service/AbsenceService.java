@@ -249,39 +249,48 @@ public class AbsenceService {
         }
 	}
 
-	private boolean checkRttIsValid(Absence absence) {
-		if(
-			checkDateStartBeforeDateEnd(absence) &&
-			checkDateAndTypeNotNull(absence) && 
-			checkStatusIsInitial(absence) &&
-			checkDatesAreNotPublicHoliday(absence) &&
-			checkDatesAreNotRttEmployer(absence) &&
-			checkDatesAreNotWeekEnd(absence) &&
-			checkNoDateInPast(absence)
-		) {
-			return true;
-		} else {
-			return false;
+	private boolean checkRttIsValid(Absence absence) {		
+		if (!checkDateStartBeforeDateEnd(absence)) {
+			throw new ResourceNotFoundException("La date de début doit être inférieur à la date de fin.");
+		} else if (!checkDateAndTypeNotNull(absence)) {
+			throw new ResourceNotFoundException("Les dates et le type ne peuvent pas être vides.");
+		} else if (!checkStatusIsInitial(absence)) {
+			throw new ResourceNotFoundException("Le status doit être initial.");
+		} else if (!checkDatesAreNotPublicHoliday(absence)) {
+			throw new ResourceNotFoundException("Le jour de début et de fin ne peuvent pas être sur un jour férié.");
+		} else if (!checkDatesAreNotRttEmployer(absence)) {
+			throw new ResourceNotFoundException("Le jour de début et de fin ne peuvent pas être sur un RTT employeur.");
+		} else if (!checkDatesAreNotWeekEnd(absence)) {
+			throw new ResourceNotFoundException("Le jour de début et de fin ne peuvent pas être un week-end.");
+		} else if (!checkNoDateInPast(absence)) {
+			throw new ResourceNotFoundException("Le jour de début ne peut pas être dans le passé.");
 		}
+
+		return true;
 	}
 	
-	private boolean checkAbsenceIsValid(Absence absence){
-
-		if(
-			checkDateStartBeforeDateEnd(absence) &&
-			checkCongesSansSoldeNeedReason(absence) &&
-			checkDateAndTypeNotNull(absence) && 
-			checkStatusIsInitial(absence) &&
-			checkDatesAreNotPublicHoliday(absence) &&
-			checkDatesAreNotRttEmployer(absence) &&
-			checkDatesAreNotWeekEnd(absence) &&
-			checkNoAbsenceInDateRange(absence)
-		) {
-			return true;
-		} else {
-			return false;
+	private boolean checkAbsenceIsValid(Absence absence) {
+		if (!checkDateStartBeforeDateEnd(absence)) {
+			throw new ResourceNotFoundException("La date de début doit être inférieur à la date de fin.");
+		} else if (!checkCongesSansSoldeNeedReason(absence)) {
+			throw new ResourceNotFoundException("Les congés sans soldes nécessitent un motif.");
+		} else if (!checkDateAndTypeNotNull(absence)) {
+			throw new ResourceNotFoundException("Les dates et le type ne peuvent pas être vides.");
+		} else if (!checkStatusIsInitial(absence)) {
+			throw new ResourceNotFoundException("Le status doit être initial.");
+		} else if (!checkDatesAreNotPublicHoliday(absence)) {
+			throw new ResourceNotFoundException("Le jour de début et de fin ne peuvent pas être sur un jour férié.");
+		} else if (!checkDatesAreNotRttEmployer(absence)) {
+			throw new ResourceNotFoundException("Le jour de début et de fin ne peuvent pas être sur un RTT employeur.");
+		} else if (!checkDatesAreNotWeekEnd(absence)) {
+			throw new ResourceNotFoundException("Le jour de début et de fin ne peuvent pas être un week-end.");
+		} else if (!checkNoDateInPast(absence)) {
+			throw new ResourceNotFoundException("Le jour de début ne peut pas être dans le passé.");
+		} else if (!checkNoAbsenceInDateRange(absence)) {
+			throw new ResourceNotFoundException("Un jour de congé existe déjà sur cette période.");
 		}
-		
+ 
+		return true;
 	}
 
 	private boolean checkUpdateIsValid(Absence absence){
