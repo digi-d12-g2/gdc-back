@@ -33,6 +33,10 @@ public class UserService {
         }
     }
 
+    public Integer getVacationsAvalaibleById(Long id){
+        return this.repository.findVacations_avalaibleById(id);
+    }
+
     public User getUser(Long id) {
 		return this.repository.getReferenceById(id);
 	}
