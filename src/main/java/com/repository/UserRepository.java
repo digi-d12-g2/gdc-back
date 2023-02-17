@@ -12,4 +12,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u.vacations_avalaible FROM User u WHERE id = :id")
     public Integer findVacations_avalaibleById(Long id);
+
+    @Query("SELECT u.rtt FROM User u WHERE id = :id")
+    public Integer findRttById(Long id);
 }

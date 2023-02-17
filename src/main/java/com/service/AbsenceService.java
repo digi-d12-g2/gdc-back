@@ -108,8 +108,14 @@ public class AbsenceService {
 						throw new ResourceNotFoundException("Utilisateur introuvable");
 					});
 
-			Integer count = getCount(absence);
-			this.userService.decrementUserVacations(absence.getUser().getId(), count);
+			if(absence.getType() != Type.RTT_EMPLOYE){
+				Integer count = getCount(absence);
+				this.userService.decrementUserVacations(absence.getUser().getId(), count);
+			} else {
+				Integer count = getCount(absence);
+				this.userService.decrementUserRtt(absence.getUser().getId(), count);
+			}
+
 		}
 		
 		if((absence.getType() != Type.RTT_EMPLOYEUR && checkAbsenceIsValid(absence)) | (absence.getType() == Type.RTT_EMPLOYEUR && checkRttIsValid(absence))){
@@ -143,14 +149,26 @@ public class AbsenceService {
 				if(absenceToUpdate.getStatus() == Status.INITIALE){
 					if(getCount(absence) > getCount(absenceToUpdate)){
 						Integer diff = getCount(absence) - getCount(absenceToUpdate);
-						this.userService.decrementUserVacations(absenceToUpdate.getUser().getId(), diff);
+						if(absence.getType() != Type.RTT_EMPLOYE){
+							this.userService.decrementUserVacations(absenceToUpdate.getUser().getId(), diff);
+						} else {
+							this.userService.decrementUserRtt(absenceToUpdate.getUser().getId(), diff);
+						}
 					} else if(getCount(absence) < getCount(absenceToUpdate)) {
 						Integer diff = getCount(absenceToUpdate) - getCount(absence);
-						this.userService.incrementUserVacations(absenceToUpdate.getUser().getId(), diff);
+						if(absence.getType() != Type.RTT_EMPLOYE){
+							this.userService.incrementUserVacations(absenceToUpdate.getUser().getId(), diff);
+						} else {
+							this.userService.incrementUserRtt(absenceToUpdate.getUser().getId(), diff);
+						}
 					}
 				} else {
 					Integer count = getCount(absence);
-					this.userService.decrementUserVacations(absenceToUpdate.getUser().getId(), count);
+					if(absence.getType() != Type.RTT_EMPLOYE){
+						this.userService.decrementUserVacations(absenceToUpdate.getUser().getId(), count);
+					} else {
+						this.userService.decrementUserRtt(absenceToUpdate.getUser().getId(), count);
+					}
 				}
 			}
 
@@ -185,9 +203,13 @@ public class AbsenceService {
 
 		if((getAbsence(id).getType() == Type.RTT_EMPLOYEUR) && getAbsence(id).getStatus() == Status.VALIDEE){
 			this.employerRttService.incrementEmployerRTT(1L, this.employerRttService.getEmployerRTT(1L));
-		} else if ((getAbsence(id).getType() != Type.RTT_EMPLOYEUR) && (getAbsence(id).getStatus() == Status.VALIDEE || getAbsence(id).getStatus() == Status.EN_ATTENTE_VALIDATION)) {
+		} else if ((getAbsence(id).getType() != Type.RTT_EMPLOYEUR) && (getAbsence(id).getStatus() != Status.REJETEE)) {
 			Integer count = getCount(getAbsence(id));
-			this.userService.incrementUserVacations(getAbsence(id).getUser().getId(), count);
+			if(getAbsence(id).getType() != Type.RTT_EMPLOYE){
+				this.userService.incrementUserVacations(getAbsence(id).getUser().getId(), count);
+			} else {
+				this.userService.incrementUserRtt(getAbsence(id).getUser().getId(), count);
+			}
 		}
 
 		this.absenceRepository.deleteById(id);
@@ -204,7 +226,12 @@ public class AbsenceService {
 
 			if(status == Status.REJETEE){
 				Integer count = getCount(absence.get());
-				this.userService.incrementUserVacations(absence.get().getUser().getId(), count);
+				
+				if(getAbsence(id).getType() != Type.RTT_EMPLOYE){
+					this.userService.incrementUserVacations(absence.get().getUser().getId(), count);
+				} else {
+					this.userService.incrementUserRtt(absence.get().getUser().getId(), count);
+				}
 			}
 
 			this.absenceRepository.save(absenceToUpdate);
@@ -237,8 +264,12 @@ public class AbsenceService {
 				absence.setStatus(Status.EN_ATTENTE_VALIDATION);
 			} else {
 				Integer count = getCount(absence);
-				this.userService.incrementUserVacations(absence.getUser().getId(), count);
 
+				if(absence.getType() != Type.RTT_EMPLOYE){
+					this.userService.incrementUserVacations(absence.getUser().getId(), count);
+				} else {
+					this.userService.incrementUserRtt(absence.getUser().getId(), count);
+				}
 				absence.setStatus(Status.REJETEE);
 			}
 
@@ -358,7 +389,7 @@ public class AbsenceService {
 	}
 
 	private Boolean checkNoAbsenceInDateRange(Absence absence) {
-		List<Absence> absences = this.absenceRepository.getAbsencesFromTwoDatesRangeAndAbsenceIdAndUserId(absence.getDate_start(), absence.getDate_end(), absence.getId(), absence.getUser().getId());
+		List<Absence> absences = this.absenceRepository.getAbsencesFromTwoDatesRangeAndAbsenceIdAndUserId(absence.getDate_start(), absence.getDate_end(), absence.getUser().getId());
 
 		return absences.isEmpty();
 	}

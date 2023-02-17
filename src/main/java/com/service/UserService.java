@@ -37,6 +37,10 @@ public class UserService {
         return this.repository.findVacations_avalaibleById(id);
     }
 
+    public Integer getRttAvalaibleById(Long id){
+        return this.repository.findRttById(id);
+    }
+
     public User getUser(Long id) {
 		return this.repository.getReferenceById(id);
 	}
@@ -68,13 +72,29 @@ public class UserService {
 	}
 
     @Transactional
+	public User decrementUserRtt(Long id, Integer count){
+		
+        User userToDecrement = getUser(id);
+        userToDecrement.setRtt(userToDecrement.getRtt() - count);
+
+        return this.repository.save(userToDecrement);
+	}
+
+    @Transactional
 	public User incrementUserVacations(Long id, Integer count){
 		
         User userToIncrement = getUser(id);
         userToIncrement.setVacations_avalaible(userToIncrement.getVacations_avalaible() + count);
 
         return this.repository.save(userToIncrement);
-
 	}
 
+    @Transactional
+	public User incrementUserRtt(Long id, Integer count){
+		
+        User userToIncrement = getUser(id);
+        userToIncrement.setRtt(userToIncrement.getRtt() + count);
+
+        return this.repository.save(userToIncrement);
+	}
 }
