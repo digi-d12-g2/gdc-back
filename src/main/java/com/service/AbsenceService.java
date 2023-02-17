@@ -150,7 +150,6 @@ public class AbsenceService {
 					}
 				} else {
 					Integer count = getCount(absence);
-					System.out.println(count);
 					this.userService.decrementUserVacations(absenceToUpdate.getUser().getId(), count);
 				}
 			}
@@ -288,7 +287,7 @@ public class AbsenceService {
 	private Integer getCount(Absence absence){
 		Long countL = ChronoUnit.DAYS.between(absence.getDate_start(), absence.getDate_end());
 		Integer count = countL.intValue() + 1;
-		
+
 		return count;
 	}
 	
@@ -335,13 +334,7 @@ public class AbsenceService {
 	}
 
 	private Boolean checkDatesAreNotPublicHoliday(Absence absence) {
-		System.out.println(absence.getDate_start());
-		System.out.println(absence.getDate_end());
-
 		List<PublicHolidays> publicHolidays = this.publicHolidayRepository.getPublicHolidaysFromTwoDates(absence.getDate_start(), absence.getDate_end());
-		for(PublicHolidays pH : publicHolidays){
-			System.out.println(pH.getLabel());
-		}
 		return publicHolidays.isEmpty();
 	}
 
