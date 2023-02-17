@@ -34,5 +34,9 @@ public class UserController {
     public Integer getVacationsAvalaible(@PathVariable Long id){
         return this.userService.getVacationsAvalaibleById(id);
     }
-    
+
+    @GetMapping("rtt_avalaible/{id}")
+    public Integer getRttAvalaible(@PathVariable Long id){
+        return this.userService.getRttAvalaibleById(id);
+    }
 }
