@@ -12,6 +12,9 @@ public class ResourceNotFoundException extends RuntimeException {
         super(message);
     }
 
+    /**
+     * @return Integer
+     */
     public Integer getStatus() {
         return status;
     }

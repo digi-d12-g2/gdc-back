@@ -6,59 +6,76 @@ import java.util.List;
 @Entity
 @Table(name = "user")
 public class User extends BaseEntity {
-    
+
     @Column(nullable = false)
     private Boolean isAdmin;
 
     @Column(nullable = false, length = 50)
-	private String firstName;
-	
-	@Column(nullable = false, length = 50)
-	private String lastName;
-	
-	@Column(nullable = false, length = 50)
-	private String email;
-	
-	@Column(nullable = false, length = 50)
-	private String password;
-
-    @Column(nullable = false)
-	private Integer vacations_avalaible;
+    private String firstName;
 
     @Column(nullable = false, length = 50)
-	private String department;
+    private String lastName;
+
+    @Column(nullable = false, length = 50)
+    private String email;
+
+    @Column(nullable = false, length = 50)
+    private String password;
 
     @Column(nullable = false)
-	private Integer rtt;
+    private Integer vacations_avalaible;
+
+    @Column(nullable = false, length = 50)
+    private String department;
+
+    @Column(nullable = false)
+    private Integer rtt;
 
     @OneToMany(mappedBy = "user")
-	private List<Absence> absences;
+    private List<Absence> absences;
 
     @ManyToOne
     @JoinColumn(name = "id_manager")
     private Manager manager;
 
-
+    /**
+     * @return Boolean
+     */
     public Boolean isIsAdmin() {
         return this.isAdmin;
     }
 
+    /**
+     * @return Boolean
+     */
     public Boolean getIsAdmin() {
         return this.isAdmin;
     }
 
+    /**
+     * @param isAdmin
+     */
     public void setIsAdmin(Boolean isAdmin) {
         this.isAdmin = isAdmin;
     }
 
+    /**
+     * @return String
+     */
     public String getFirstName() {
         return this.firstName;
     }
 
+    /**
+     * @param firstName
+     */
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
+    /**
+     * @return String
+     */
     public String getLastName() {
         return this.lastName;
     }

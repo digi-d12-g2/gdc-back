@@ -19,31 +19,47 @@ import java.util.List;
 @RestController
 @RequestMapping("public-holidays")
 public class PublicHolidayController {
-    
+
     private PublicHolidayService publicHolidayService;
 
     public PublicHolidayController(
-        PublicHolidayService publicHolidayService
-    ) {
+            PublicHolidayService publicHolidayService) {
         super();
         this.publicHolidayService = publicHolidayService;
     }
 
+    /**
+     * @param year
+     * @return List<PublicHolidays>
+     */
     @GetMapping("/{year}")
     public List<PublicHolidays> list(@PathVariable("year") Integer year) {
         return this.publicHolidayService.listSortDate(year);
     }
 
+    /**
+     * @param publicHoliday
+     * @return ResponseEntity<?>
+     */
     @PostMapping()
-	public ResponseEntity<?> addPublicHoliday(@RequestBody PublicHolidays publicHoliday) {
-		return ResponseEntity.ok().body(this.publicHolidayService.addPublicHoliday(publicHoliday));
-	}
+    public ResponseEntity<?> addPublicHoliday(@RequestBody PublicHolidays publicHoliday) {
+        return ResponseEntity.ok().body(this.publicHolidayService.addPublicHoliday(publicHoliday));
+    }
 
+    /**
+     * @param id
+     * @param publicHoliday
+     */
     @PutMapping("/{id}")
-	public void updatePublicHoliday(@PathVariable Long id, @RequestBody PublicHolidays publicHoliday) {
-		publicHolidayService.updatePublicHoliday(id, publicHoliday);
-	}
+    public void updatePublicHoliday(@PathVariable Long id, @RequestBody PublicHolidays publicHoliday) {
+        publicHolidayService.updatePublicHoliday(id, publicHoliday);
+    }
 
+    /**
+     * @param id
+     * @return ResponseEntity<?>
+     * @throws NotFoundException
+     */
     @DeleteMapping("{id}")
     public ResponseEntity<?> deletePublicHoliday(@PathVariable("id") Long id) throws NotFoundException {
         try {

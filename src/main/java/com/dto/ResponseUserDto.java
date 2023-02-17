@@ -7,11 +7,11 @@ public class ResponseUserDto {
     private String email;
     private Boolean is_admin;
     private String department;
-	private Integer vacations_avalaible;
+    private Integer vacations_avalaible;
     private Integer rtt;
 
-
-    public ResponseUserDto(Long id, String firstname, String lastname, String email, Boolean is_admin, Integer vacations_avalaible, Integer rtt, String department) {
+    public ResponseUserDto(Long id, String firstname, String lastname, String email, Boolean is_admin,
+            Integer vacations_avalaible, Integer rtt, String department) {
         this.id = id;
         this.firstname = firstname;
         this.lastname = lastname;
@@ -28,30 +28,48 @@ public class ResponseUserDto {
         this.lastname = lastname;
         this.email = email;
     }
-        
 
-    public ResponseUserDto(){}
+    public ResponseUserDto() {
+    }
 
+    /**
+     * @return Long
+     */
     public Long getId() {
         return this.id;
     }
 
+    /**
+     * @param id
+     */
     public void setId(Long id) {
         this.id = id;
     }
 
+    /**
+     * @return String
+     */
     public String getFirstname() {
         return this.firstname;
     }
 
+    /**
+     * @param firstname
+     */
     public void setFirstname(String firstname) {
         this.firstname = firstname;
     }
 
+    /**
+     * @return String
+     */
     public String getLastname() {
         return this.lastname;
     }
 
+    /**
+     * @param lastname
+     */
     public void setLastname(String lastname) {
         this.lastname = lastname;
     }

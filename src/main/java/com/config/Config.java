@@ -15,31 +15,46 @@ import com.job.PublicHolidaysJob;
 
 @Configuration
 public class Config {
+
+    /**
+     * @return JobDetail
+     */
     @Bean
-    JobDetail absencesStatusJobDetails(){
+    JobDetail absencesStatusJobDetails() {
         return JobBuilder.newJob(AbsencesStatusJob.class).withIdentity("AbsencesStatusJob").storeDurably().build();
     }
 
+    /**
+     * @param absencesStatusJobDetails
+     * @return Trigger
+     */
     @Bean
     public Trigger absencesStatusJobTrigger(@Autowired JobDetail absencesStatusJobDetails) {
         return TriggerBuilder.newTrigger()
-          .forJob(absencesStatusJobDetails)
-          .withIdentity("AbsencesStatusJob")
-          .withSchedule(CronScheduleBuilder.cronSchedule("5 * * * * ?"))
-          .build(); //une fois par jour...
+                .forJob(absencesStatusJobDetails)
+                .withIdentity("AbsencesStatusJob")
+                .withSchedule(CronScheduleBuilder.cronSchedule("5 * * * * ?"))
+                .build(); // une fois par jour...
     }
 
+    /**
+     * @return JobDetail
+     */
     @Bean
-    JobDetail publicHolidaysJobDetails(){
+    JobDetail publicHolidaysJobDetails() {
         return JobBuilder.newJob(PublicHolidaysJob.class).withIdentity("PublicHolidaysJob").storeDurably().build();
     }
 
+    /**
+     * @param publicHolidaysJobDetails
+     * @return Trigger
+     */
     @Bean
     public Trigger publicHolidaysJobTrigger(@Autowired JobDetail publicHolidaysJobDetails) {
         return TriggerBuilder.newTrigger()
-          .forJob(publicHolidaysJobDetails)
-          .withIdentity("PublicHolidaysJob")
-          .withSchedule(CronScheduleBuilder.cronSchedule("1 * * 1 * ?"))
-          .build(); //une fois par an...
+                .forJob(publicHolidaysJobDetails)
+                .withIdentity("PublicHolidaysJob")
+                .withSchedule(CronScheduleBuilder.cronSchedule("1 * * 1 * ?"))
+                .build(); // une fois par an...
     }
 }

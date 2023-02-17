@@ -10,10 +10,14 @@ import com.service.AbsenceService;
 
 @Component
 public class AbsencesStatusJob implements Job {
-    
+
     @Autowired
     private AbsenceService absenceService;
 
+    /**
+     * @param arg0
+     * @throws JobExecutionException
+     */
     @Override
     public void execute(JobExecutionContext arg0) throws JobExecutionException {
         this.absenceService.modifyAbsencesStatus();

@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "absence")
 public class Absence extends BaseEntity {
-    
+
     @Column(nullable = false)
     private LocalDate date_start;
 
@@ -33,12 +33,11 @@ public class Absence extends BaseEntity {
     private User user;
 
     public Absence(
-        LocalDate date_start,
-        LocalDate date_end,
-        Type type,
-        Status status,
-        String reason
-    ) {
+            LocalDate date_start,
+            LocalDate date_end,
+            Type type,
+            Status status,
+            String reason) {
         this.date_start = date_start;
         this.date_end = date_end;
         this.type = type;
@@ -46,28 +45,47 @@ public class Absence extends BaseEntity {
         this.reason = reason;
     }
 
-    public Absence() {}
+    public Absence() {
+    }
 
+    /**
+     * @return LocalDate
+     */
     public LocalDate getDate_start() {
         return this.date_start;
     }
 
+    /**
+     * @param date_start
+     */
     public void setDate_start(LocalDate date_start) {
         this.date_start = date_start;
     }
 
+    /**
+     * @return LocalDate
+     */
     public LocalDate getDate_end() {
         return this.date_end;
     }
 
+    /**
+     * @param date_end
+     */
     public void setDate_end(LocalDate date_end) {
         this.date_end = date_end;
     }
 
+    /**
+     * @return Type
+     */
     public Type getType() {
         return this.type;
     }
 
+    /**
+     * @param type
+     */
     public void setType(Type type) {
         this.type = type;
     }

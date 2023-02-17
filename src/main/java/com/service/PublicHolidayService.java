@@ -30,7 +30,7 @@ public class PublicHolidayService {
         super();
         this.repository = repository;
     }
-    
+
     public void apiAddPublicHolidays() {
         final String uri = "https://calendrier.api.gouv.fr/jours-feries/metropole.json";
 
@@ -38,49 +38,59 @@ public class PublicHolidayService {
         String result = restTemplate.getForObject(uri, String.class);
 
         ObjectMapper objectMapper = new ObjectMapper();
-       
+
         try {
-            TypeReference<HashMap<String, String>> typeRef = new TypeReference<HashMap<String, String>>() {};
+            TypeReference<HashMap<String, String>> typeRef = new TypeReference<HashMap<String, String>>() {
+            };
             Map<String, String> map = objectMapper.readValue(result, typeRef);
 
-            for (Map.Entry<String,String> mapentry : map.entrySet()) {
+            for (Map.Entry<String, String> mapentry : map.entrySet()) {
 
                 String dateStr = mapentry.getKey().toString();
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); 
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                 LocalDate date = LocalDate.parse(dateStr, formatter);
 
-                if(checkDateNotExists(date)){
+                if (checkDateNotExists(date)) {
                     PublicHolidays publicHoliday = new PublicHolidays();
 
                     publicHoliday.setLabel(mapentry.getValue().toString());
                     publicHoliday.setDate(date);
-    
+
                     this.repository.save(publicHoliday);
                 }
 
             }
 
-        } catch(Exception e) {
-           e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
     }
 
+    /**
+     * @param publicHoliday
+     * @return PublicHolidays
+     */
     @Transactional
-	public PublicHolidays addPublicHoliday(PublicHolidays publicHoliday) {
-		if (checkPublicHolidayIsValid(publicHoliday)){
-			return this.repository.save(publicHoliday);
-		} else {
-			throw new ResourceNotFoundException("Impossible de créer le jour férié");
-		}
-	}
+    public PublicHolidays addPublicHoliday(PublicHolidays publicHoliday) {
+        if (checkPublicHolidayIsValid(publicHoliday)) {
+            return this.repository.save(publicHoliday);
+        } else {
+            throw new ResourceNotFoundException("Impossible de créer le jour férié");
+        }
+    }
 
+    /**
+     * @param id
+     * @param publicHoliday
+     * @return PublicHolidays
+     */
     @Transactional
-	public PublicHolidays updatePublicHoliday(Long id, PublicHolidays publicHoliday) {
+    public PublicHolidays updatePublicHoliday(Long id, PublicHolidays publicHoliday) {
 
         PublicHolidays publicHolidayToUpdate = findById(id);
 
-        if(checkUpdatePublicHolidayIsValid(publicHolidayToUpdate.getId(), publicHoliday.getDate())){
+        if (checkUpdatePublicHolidayIsValid(publicHolidayToUpdate.getId(), publicHoliday.getDate())) {
             publicHolidayToUpdate.setDate(publicHoliday.getDate());
             publicHolidayToUpdate.setLabel(publicHoliday.getLabel());
         }
@@ -88,14 +98,25 @@ public class PublicHolidayService {
         return this.repository.save(publicHolidayToUpdate);
     }
 
+    /**
+     * @return List<PublicHolidays>
+     */
     public List<PublicHolidays> list() {
         return this.repository.findAll();
     }
 
+    /**
+     * @param year
+     * @return List<PublicHolidays>
+     */
     public List<PublicHolidays> listSortDate(Integer year) {
         return this.repository.findSortDate(year);
     }
 
+    /**
+     * @param id
+     * @return PublicHolidays
+     */
     public PublicHolidays findById(Long id) {
         return this.repository.getReferenceById(id);
     }
@@ -104,28 +125,32 @@ public class PublicHolidayService {
      * @param id
      * @return String
      * @throws NotFoundException
-    */
+     */
     public String delete(Long id) throws NotFoundException {
 
-        Optional<PublicHolidays>publicHolidays = this.repository.findById(id);
+        Optional<PublicHolidays> publicHolidays = this.repository.findById(id);
 
-        if(publicHolidays != null) {
+        if (publicHolidays != null) {
             this.repository.deleteById(id);
             return "Public holidays deleted";
-        }else {
-			throw new NotFoundException();
+        } else {
+            throw new NotFoundException();
         }
     }
 
-    private boolean checkPublicHolidayIsValid(PublicHolidays publicHoliday){
+    /**
+     * @param publicHoliday
+     * @return boolean
+     */
+    private boolean checkPublicHolidayIsValid(PublicHolidays publicHoliday) {
         return checkDateNotExists(publicHoliday.getDate());
     }
 
-    private boolean checkUpdatePublicHolidayIsValid(Long id, LocalDate date){
+    private boolean checkUpdatePublicHolidayIsValid(Long id, LocalDate date) {
         return (Objects.isNull(this.repository.findByDateNotSameId(date, id)));
     }
 
-    private boolean checkDateNotExists(LocalDate date){
+    private boolean checkDateNotExists(LocalDate date) {
         return (Objects.isNull(this.repository.findByDate(date)));
-	}
+    }
 }

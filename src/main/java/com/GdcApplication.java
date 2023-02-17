@@ -9,6 +9,9 @@ import com.service.PublicHolidayService;
 @SpringBootApplication
 public class GdcApplication {
 
+	/**
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		ApplicationContext ctx = SpringApplication.run(GdcApplication.class, args);
 		PublicHolidayService publicHolidayService = ctx.getBean(PublicHolidayService.class);

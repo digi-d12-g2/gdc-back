@@ -14,6 +14,10 @@ public class PublicHolidaysJob implements Job {
     @Autowired
     private PublicHolidayService publicHolidayService;
 
+    /**
+     * @param arg0
+     * @throws JobExecutionException
+     */
     @Override
     public void execute(JobExecutionContext arg0) throws JobExecutionException {
         this.publicHolidayService.apiAddPublicHolidays();

@@ -20,8 +20,15 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    /**
+     * @param email
+     * @param password
+     * @return ResponseEntity<?>
+     * @throws NotFoundException
+     */
     @GetMapping
-    public ResponseEntity<?> signIn(@RequestParam String email, @RequestParam String password) throws NotFoundException {
+    public ResponseEntity<?> signIn(@RequestParam String email, @RequestParam String password)
+            throws NotFoundException {
         try {
             ResponseUserDto signInResponse = this.userService.signIn(email, password);
             return ResponseEntity.status(200).body(signInResponse);
@@ -30,13 +37,21 @@ public class UserController {
         }
     }
 
+    /**
+     * @param id
+     * @return Integer
+     */
     @GetMapping("vacations_avalaible/{id}")
-    public Integer getVacationsAvalaible(@PathVariable Long id){
+    public Integer getVacationsAvalaible(@PathVariable Long id) {
         return this.userService.getVacationsAvalaibleById(id);
     }
 
+    /**
+     * @param id
+     * @return Integer
+     */
     @GetMapping("rtt_avalaible/{id}")
-    public Integer getRttAvalaible(@PathVariable Long id){
+    public Integer getRttAvalaible(@PathVariable Long id) {
         return this.userService.getRttAvalaibleById(id);
     }
 }

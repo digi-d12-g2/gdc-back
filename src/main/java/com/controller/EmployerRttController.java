@@ -11,15 +11,18 @@ import com.service.EmployerRttService;
 @RequestMapping("rtt_employer")
 public class EmployerRttController {
 
-    private EmployerRttService employerRttService;
-	
+	private EmployerRttService employerRttService;
+
 	public EmployerRttController(EmployerRttService employerRttService) {
 		this.employerRttService = employerRttService;
 	}
 
-    @GetMapping
+	/**
+	 * @return ResponseEntity<?>
+	 */
+	@GetMapping
 	public ResponseEntity<?> getSoldeEmployerRtt() {
 		return ResponseEntity.ok().body(this.employerRttService.getEmployerRTT(1L));
 	}
-	
+
 }
