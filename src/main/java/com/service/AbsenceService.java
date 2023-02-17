@@ -143,12 +143,9 @@ public class AbsenceService {
 				if(absenceToUpdate.getStatus() == Status.INITIALE){
 					if(getCount(absence) > getCount(absenceToUpdate)){
 						Integer diff = getCount(absence) - getCount(absenceToUpdate);
-						System.out.println("pok  " + diff);
-
 						this.userService.decrementUserVacations(absenceToUpdate.getUser().getId(), diff);
 					} else if(getCount(absence) < getCount(absenceToUpdate)) {
 						Integer diff = getCount(absenceToUpdate) - getCount(absence);
-						System.out.println("ok  " + diff);
 						this.userService.incrementUserVacations(absenceToUpdate.getUser().getId(), diff);
 					}
 				} else {
@@ -289,14 +286,9 @@ public class AbsenceService {
 	}
 
 	private Integer getCount(Absence absence){
-		System.out.println("Date deb  : " + absence.getDate_start());
-		System.out.println("Date fin  : " + absence.getDate_end());
-
 		Long countL = ChronoUnit.DAYS.between(absence.getDate_start(), absence.getDate_end());
-		System.out.println("COUNTL  : " + countL);
 		Integer count = countL.intValue() + 1;
-		System.out.println("COUNT  : " + count);
-
+		
 		return count;
 	}
 	
